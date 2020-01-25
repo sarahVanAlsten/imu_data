@@ -128,7 +128,59 @@ saipe <- saipe09 %>%
   full_join(saipe16, by = c("fips_full_09" = "fips_full_16")) %>%
   full_join(saipe17, by = c("fips_full_09" = "fips_full_17")) %>%
   full_join(saipe18, by = c("fips_full_09" = "fips_full_18")) 
-  
+
+#write out the file
+write_csv(saipe, "data//saipe.csv")
 
 
+####################################################################
+#now just keep the overall poverty rate
+poverty <- saipe %>%
+  select_at(vars(contains("poverty_percent_all_ages")))
+
+
+povRecode <- function(x){
+  return(
+    ifelse(is.na(x), NA,
+           ifelse(x <= .1, 25.1,
+                  ifelse(x <= 1, 24.6,
+                         ifelse(x <= 4, 23.7,
+                         ifelse(x <= 6, 22.8,
+                                ifelse(x<=8, 21.9,
+                                       ifelse(x<=10, 21,
+                                              ifelse(x<=12, 20,
+                                                     ifelse(x<=14, 18.7,
+                          ifelse(x<=16, 17.4,
+                                 ifelse(x<=18, 16.2,
+                                        ifelse(x<=20, 14.9,
+                                               ifelse(x<=22, 13.6,
+                                                      ifelse(x<=24, 12.2,
+                                                             ifelse(x<=26, 10.9,
+                                                                    ifelse(x<=28, 9.3,
+                ifelse(x<=30, 7.8,
+                       ifelse(x<=32, 6.6,
+                              ifelse(x<=34, 5.6,
+                                     ifelse(x<=36, 4.7,
+                                            ifelse(x<=38, 3.4,
+                                                   ifelse(x<=40, 2.1,
+                                                          ifelse(x<=42, 1.3,
+                      ifelse(x<=44, 1,
+                             ifelse(x<=46, 0.7,
+                                    ifelse(x<=48, 0.4,
+                                           ifelse(x<=50, 0.1, 0)))))))))))))))))))))))))))
+  )
+}
+
+
+#recode to poverty_imu
+pov_imu <- poverty %>%
+  mutate_all(.funs = ~(as.numeric(.))) %>%
+  mutate_all(.funs = ~(povRecode(.)))
+
+#add county identifiers back on
+pov_imu$fips <- saipe$fips_full_09
+pov_imu$county <- saipe$name_09
+
+#write this out
+write_csv(pov_imu, "data\\pov_imu.csv")
 
