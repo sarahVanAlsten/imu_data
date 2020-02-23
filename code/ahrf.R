@@ -149,6 +149,48 @@ ahrf <- ahrf %>%
          povperc11 = f2410224105,
          povperc10 = f2410624109)
 
+ahrf <- ahrf %>%
+  rename(hpsa_pc19 = f47000470,
+         hpsa_pc18 = f47100471,
+         hpsa_pc17 = f47200472,
+         hpsa_pc16 = f47300473,
+         hpsa_pc15 = f47400474,
+         hpsa_pc10 = f47500475,
+         hpsa_mh19 = f48200482,
+         hpsa_mh18 = f48300483,
+         hpsa_mh17 = f48400484,
+         hpsa_mh16 = f48500485,
+         hpsa_mh15 = f48600486,
+         hpsa_mh10 = f48700487,
+         percwhite10 = f1884118844,
+         medhhinc17 = f2319523200,
+         medhhinc16 = f2320123206,
+         medhhinc15 = f2320723212,
+         medhhinc14 = f2321323218,
+         medhhinc13 = f2321923224,
+         medhhinc12 = f2322523230,
+         medhhinc11 = f2323123236,
+         medhhinc10 = f2323723242,
+         percunins17 = f2520025203, 
+         percunins16 = f2520425207, 
+         percunins15 = f2520825211, 
+         percunins14 = f2521225215, 
+         percunins13 = f2521625219, 
+         percunins12 = f2522025223, 
+         percunins11 = f2522425227, 
+         percunins10 = f2522825231,
+         perclths1317 = f2935329356,
+         perclths1115 = f2935729360,
+         unemprate18 = f3087830880,
+         unemprate17 = f3088130883,
+         unemprate16 = f3088430886,
+         unemprate15 = f3088730889,
+         unemprate14 = f3089030892,
+         unemprate13 = f3089330895,
+         unemprate12 = f3089630898,
+         unemprate11 = f3089930901,
+         unemprate10 = f3090230904)
+
 #need to get FTE for all PCPs in the county
 #this comes as sum of OBGYN (1.9), Fam Prac (1.4), Int Med (1.8), Pediatrics (1.4), and Other PC (1.6)
 ahrf <- ahrf %>%
@@ -448,46 +490,8 @@ for (i in 1:nrow(ahrf.imu)) {
   ahrf.imu$pcp15weight[i] <- weight_pcp(ahrf.imu$pcpratio15[i])
   ahrf.imu$pcp17weight[i] <- weight_pcp(ahrf.imu$pcpratio17[i])
 }
-
+#############################################
 
 #write this file out
 write_csv(ahrf.imu, "data\\ahrf_imu.csv")
 write_csv(ahrf, "data\\ahrf_full.csv")
-
-
-#calculate an IMU score for each county, at least in years 10, 15, and 17
-ahrf.imu <- ahrf.imu %>%
-  rowwise() %>%
-  mutate(imu17 = pcp17weight + pop65perc17 + infmort1317 + povperc17,
-         imu15 = pcp15weight + pop65perc15 + infmort1115 + povperc15,
-         imu10 = pcp10weight + pop65perc10 + infmort0610 + povperc10)
-
-
-#plot
-plot(ahrf.imu$imu17)
-plot(ahrf.imu$imu15)
-plot(ahrf.imu$imu10)
-
-table(is.na(ahrf.imu$imu15))
-table(is.na(ahrf.imu$imu17))
-
-head(ahrf.imu$statefips)
-head(ahrf.imu$countyfips)
-
-ahrf.imu$countyname2 <- paste(as.character(ahrf.imu$countyname), "County")
-#add comment
-#ok... good news is that we have the ACTUAL imu for eligible counties
-#(ie, those that are suppressed in this data.) I can add that back in
-#for those KNOWN counties to get a full IMU score
-imu <- readxl::read_xlsx(path = "data\\county_IMU_scores_from_hrsa.xlsx")
-imu <- janitor::clean_names(imu)
-
-#get the county codes for the IMUs listed in the data
-head(imu$service_area)
-head(imu$state)
-head(ahrf.imu$stateabb)
-
-table(imu$service_area %in% ahrf.imu$countyname2)
-
-table(merged$state_fips_code)
-table(rural$common_state_county_fips_code %in% paste0(ahrf.imu$statefips, ahrf.imu$countyfips))
