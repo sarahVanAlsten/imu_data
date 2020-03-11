@@ -149,6 +149,7 @@ ahrf <- ahrf %>%
          povperc11 = f2410224105,
          povperc10 = f2410624109)
 
+
 ahrf <- ahrf %>%
   rename(hpsa_pc19 = f47000470,
          hpsa_pc18 = f47100471,
@@ -213,15 +214,28 @@ ahrf <- ahrf %>%
 ahrf <- ahrf %>% rename(
   countyname = f6700091)
 
+#non fed primary care not including hosp residents and over 75 yrs
+ahrf <- ahrf %>%
+  rename(
+    primcare17 = f55800561,
+    primcare16 = f56200565,
+    primcare15 = f56600569,
+    primcare14 = f57000573,
+    primcare13 = f57400577,
+    primcare12 = f57800581,
+    primcare11 = f58200585,
+    primcare10 = f58600589)
+
+
 #select the columns I just renamed to make this go faster
 #names that don't start with F
 ahrf.sub <- ahrf[ , ! (substr(names(ahrf), 1, 1) == "f")]
 
-ahrf.sub<- ahrf.sub %>%
-  rename(obgyn10 = obgyn13,
-         ped10 = ped13,
-         intmed10 = intmed13,
-         dfammed10 = dfammed13)
+# ahrf.sub<- ahrf.sub %>%
+#   rename(obgyn10 = obgyn13,
+#          ped10 = ped13,
+#          intmed10 = intmed13,
+#          dfammed10 = dfammed13)
 
 #create an index of medical underservice for each county
 
@@ -416,9 +430,18 @@ ahrf.imu <- ahrf.imu %>%
 
 #to get pcp ratio, divide by totpop/1000
 ahrf.imu <- ahrf.imu %>%
-  mutate(pcpratio17 = pcp17/(popest17/1000),
-         pcpratio15 = pcp15/(popest15/1000),
-         pcpratio10 = pcp10/(popest10/1000))
+  mutate(#pcpratio17 = pcp17/(popest17/1000),
+         #pcpratio15 = pcp15/(popest15/1000),
+         #pcpratio10 = pcp10/(popest10/1000),
+         pcpratio17 = primcare17/(popest17/1000),
+         pcpratio16 = primcare16/(popest16/1000),
+         pcpratio15 = primcare15/(popest15/1000),
+         pcpratio14 = primcare14/(popest14/1000),
+         pcpratio13 = primcare13/(popest13/1000),
+         pcpratio12 = primcare12/(popest12/1000),
+         pcpratio11 = primcare11/(popest11/1000),
+         pcpratio10 = primcare10/(popest10/1000)
+         )
 
 #now, assign the ratio to it
 weight_pcp <- function(x){
@@ -479,15 +502,24 @@ weight_pcp <- function(x){
   }
   
 }
-
+ahrf.imu$pcp11weight <- 999
+ahrf.imu$pcp12weight <- 999
+ahrf.imu$pcp13weight <- 999
+ahrf.imu$pcp14weight <- 999
 ahrf.imu$pcp15weight <- 999
+ahrf.imu$pcp16weight <- 999
 ahrf.imu$pcp17weight <- 999
 ahrf.imu$pcp10weight <- 999
 
 #get pcp imu weights
 for (i in 1:nrow(ahrf.imu)) {
   ahrf.imu$pcp10weight[i] <- weight_pcp(ahrf.imu$pcpratio10[i])
+  ahrf.imu$pcp11weight[i] <- weight_pcp(ahrf.imu$pcpratio11[i])
+  ahrf.imu$pcp12weight[i] <- weight_pcp(ahrf.imu$pcpratio12[i])
+  ahrf.imu$pcp13weight[i] <- weight_pcp(ahrf.imu$pcpratio13[i])
+  ahrf.imu$pcp14weight[i] <- weight_pcp(ahrf.imu$pcpratio14[i])
   ahrf.imu$pcp15weight[i] <- weight_pcp(ahrf.imu$pcpratio15[i])
+  ahrf.imu$pcp16weight[i] <- weight_pcp(ahrf.imu$pcpratio16[i])
   ahrf.imu$pcp17weight[i] <- weight_pcp(ahrf.imu$pcpratio17[i])
 }
 #############################################
@@ -495,3 +527,4 @@ for (i in 1:nrow(ahrf.imu)) {
 #write this file out
 write_csv(ahrf.imu, "data\\ahrf_imu.csv")
 write_csv(ahrf, "data\\ahrf_full.csv")
+write_csv(ahrf.imu, "data\\ahrf_imu23.csv")
