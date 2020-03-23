@@ -351,11 +351,30 @@ old$countyname <- county$name_17
 pov <- pov %>%
   rename(x5_digit_fips_code = fips)
 ################################################################
+#other background stuff
+otherstuff <- county %>%
+  select(
+    percent_non_hispanic_white_raw_value_14,
+    percent_hispanic_raw_value_14,
+    percent_non_hispanic_african_american_raw_value_14,
+    did_not_get_needed_health_care_raw_value_14,
+    cerebrovascular_disease_hospitalizations_raw_value_14,
+    percent_rural_raw_value_14, residential_segregation_black_white_raw_value_14,
+    median_household_income_raw_value_14,uninsured_adults_raw_value_14,
+    unemployment_raw_value_14,high_school_graduation_raw_value_14,
+    preventable_hospital_stays_raw_value_14,
+    x5_digit_fips_code_17)
+
+
+otherstuff <- otherstuff %>%
+  rename(x5_digit_fips_code = x5_digit_fips_code_17)
+
 #finally, link all these back together
 imu <- primaryCare %>%
   right_join(pov) %>%
   right_join(inf_score) %>%
-  right_join(old)
+  right_join(old) %>%
+  right_join(otherstuff)
 
 #make composite score
 imu <- imu %>%
@@ -368,9 +387,24 @@ imu <- imu %>%
          imu11 = percent_65_and_older_raw_value_11 + pv_11 + inf_new_11 + primary_care_physicians_raw_value_11)
 
 
+
 imu <- imu %>%
   select(x5_digit_fips_code, countyname,
-         imu17, imu16, imu15, imu14, imu13, imu12, imu11)
+         imu17, imu16, imu15, imu14, imu13, imu12, imu11,
+         percent_65_and_older_raw_value_14, pv_14, inf_new_14, primary_care_physicians_raw_value_14,
+         percent_65_and_older_raw_value_15, pv_14, inf_new_15, primary_care_physicians_raw_value_15,
+         percent_65_and_older_raw_value_16, pv_14, inf_new_16, primary_care_physicians_raw_value_16,
+         percent_65_and_older_raw_value_17, pv_14, inf_new_17, primary_care_physicians_raw_value_17,
+         percent_65_and_older_raw_value_13, pv_14, inf_new_13, primary_care_physicians_raw_value_13,
+         percent_non_hispanic_white_raw_value_14,
+         percent_hispanic_raw_value_14,
+         percent_non_hispanic_african_american_raw_value_14,
+         did_not_get_needed_health_care_raw_value_14,
+         cerebrovascular_disease_hospitalizations_raw_value_14,
+         percent_rural_raw_value_14, residential_segregation_black_white_raw_value_14,
+         median_household_income_raw_value_14,uninsured_adults_raw_value_14,
+         unemployment_raw_value_14,high_school_graduation_raw_value_14,
+         preventable_hospital_stays_raw_value_14)
 
 plot(imu$imu17)
 plot(imu$imu16)
@@ -506,7 +540,7 @@ plot(merged.data$Age.Adjusted.Rate_2011h, merged.data$imu11)
 plot(merged.data$Age.Adjusted.Rate_2011a, merged.data$imu11)
 
 #write this to csv
-write_csv(merged.data, path = "data\\merged_mort_feb28.csv")
+write_csv(merged.data, path = "data\\merged_mort_mar16.csv")
 
 # ###################################################################
 hrsa <- readxl::read_xlsx("data\\county_IMU_scores_from_hrsa.xlsx")
@@ -579,6 +613,8 @@ merge.mortb <- merge.mortb %>%
   left_join(smoke, by = "county")
 
 merge.mortb <- merge.mortb[merge.mortb$newimu14 > 25,]
+
+write_csv(merge.mortb,"data\\final_IMU_analysis_data.csv")
 ################################################
 #wrong <- merge.mortb[merge.mortb$treatment == 0 & merge.mortb$newimu14<62,]
 #wrongb <- merge.mortb[merge.mortb$treatment == 1 & merge.mortb$newimu14<62,]
@@ -594,6 +630,7 @@ plot(merge.mortb$newimu14, merge.mortb$age_adjusted_rate_2016a)
 plot(merge.mortb$newimu14, merge.mortb$age_adjusted_rate_2016c)
 plot(merge.mortb$newimu14, merge.mortb$age_adjusted_rate_2016h)
 
+
 #all cause mortality in 2014
 ###########################################################
 ac.14 <- RDestimate(age_adjusted_rate_2014a ~ newimu14 + treatment, data = merge.mortb,
@@ -606,14 +643,16 @@ plot(ac.14)
 ac.14c <- RDestimate(crude_rate_2014a ~ newimu14 + treatment, data = merge.mortb,
                      subset = NULL, cutpoint = 62, bw = NULL,
                      kernel = "triangular", se.type = "HC1", cluster = NULL,
-                     verbose = FALSE, model = TRUE, frame = FALSE)
+                     verbose = TRUE, model = TRUE, frame = FALSE)
 summary(ac.14c)
 plot(ac.14c)
+
+
 #################################################################
 #heartdz mortality in 2014
 ###########################################################
 hd.14 <- RDestimate(age_adjusted_rate_2014h ~ newimu14 + treatment, data = merge.mortb,
-                    subset = NULL, cutpoint = 62, bw = NULL,
+                    subset = NULL, cutpoint = 62, bw = ac.14$bw,
                     kernel = "triangular", se.type = "HC1", cluster = NULL,
                     verbose = TRUE, model = TRUE, frame = FALSE)
 summary(hd.14)
@@ -935,8 +974,9 @@ plot(y =merge.mortb$uninsured_2014, x= merge.mortb$newimu14)
 plot(y =merge.mortb$unemployment_rate_2014, x= merge.mortb$newimu14)
 
 DCdensity(merge.mortb$newimu14, 62, bw = 11.9)
-rddapp::dc_test(`IMU Score 2014`, 62, bw = 11.9,)
+rddapp::dc_test(`IMU Score 2014`, 62, bw = 11.9)
+rddapp::dc_test(`IMU Score 2014`, 62, bw = 10)
+
 
 DCdensity(merge.mortb$newimu14, 62, bw = 9.5)
 DCdensity(merge.mortb$newimu14, 62, bw = 8)
-
