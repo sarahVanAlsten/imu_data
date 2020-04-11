@@ -35,7 +35,7 @@ library(tableone)
 
   A county’s eligibility to participate in the NHSC is determined by the index of medical underservice score, which quantifies an area’s degree of physician shortage relative to healthcare needs. Scores are typically generated automatically by the Health Resource and Service Administration from Area Health Resource Files, CDC WONDER, and Census data, with all scores of 62 or below eligible for NHSC participation. Although historic data on county eligibility are publicly available, actual index of medical underservice scores are only provided for counties currently eligible for the NHSC (i.e. in 2019; 2020 eligibility has not yet been determined). Thus, to obtain index of medical underservice scores for earlier years, I regenerate scores for each county in the U.S. using historic data and the Health Resource and Service Administration scoring guidelines (U.S. Department of Health and Human Services, 2015). Scores are calculated as the weighted sum of a county’s primary care physician-to-population ratio, percentage of residents age 65 or older, percentage of population at or below the federal poverty level, and infant mortality rate or, in instances where infant mortality rates were suppressed due to small sample sizes, rates of low birthweight. All score subcomponents are based on five-year averages to prevent substantial annual variation in program eligibility for treated counties (i.e. the averages of 2009-2014 components were used to calculate 2014 scores), and counties with qualifying scores automatically retain eligibility for two years following designation, regardless of subsequent scores. Though the NHSC has been in operation since the late 1970s, the current index of medical underservice scoring criteria were first implemented in 2014 such that all potential carry-overs from 2012/2013 to 2014 were disallowed. Thus, unlike for earlier periods, a county’s NHSC participation in 2014 is based strictly on its 2014 score rather than any one of its 2012, 2013, or 2014 scores. Table 1 provides a more detailed description of scoring criteria and weighting procedures.
 
-*Treatment Assignment*
+*Treatment Assignment and Identification*
 
   Let $Z_i$ be a dichotomous variable denoting the eligibility of county $i$ to participate in the NHSC in 2014 (with 0 = ineligible, 1 = eligible). Also let $X_i$ denote the index of medical underservice score in 2014, and $D_i$ (1 = treated, 0 = control) denote actual participation in 2014. $Z_i$ is a deterministic function of $X_i$ such that:
 $$
@@ -54,14 +54,16 @@ f(Z_i) &  \text{ if }Z_i =1 \\
 $$
 
   Because of this feature, monotonicity is guaranteed to hold, with the exception that state governors may grant exemptions for ineligible rural counties with demonstrated primary care shortages to receive funding for rural health clinics. However, the application process for exemption is long and requires extensive administrative oversight, with few requests ultimately being approved, so the population of defiers is both known and small (a total of five counties were exempted in 2014, all of which I exclude from further analyses). As shown in Table 2, derived treatment assignment according to simulated scores adhered to known participation and eligibility rules, with zero counties above the cutoff participating and approximately one-half of those below participating. 
+  
+  In addition to the monotonicity, as discussed above, the ability to identify the RDD effect as the local average treatment effect for the subpopulation of compliers (i.e. counties which are not perpetually enrolled- or never enrolled- in the program) which have IMU scores near the cutoff hinges upon several additional assumptions, namely, continuity in potential outcomes and potential treatment near the threshold, the relevance of $Z_i$, and the exclusion restriction. Supplementary Table
 
-*Model Specification*
+*Model Specification and Estimation*
 
  To recover the regression discontinuity effect $\tau$ of county NHSC participation $D_i$ on 2015 mortality rate $Y_i$, I use a fuzzy regression discontinuity design and estimate $\tau$ with a two-stage least squares approach where $D$ is instrumented by $Z$. I allow for possible heterogeneity in the treatment effect as a function of $X_i$ by including interaction terms between the zero-centered transformation of $X_i$ ($\tilde{X_i}$) and eligibility $Z_i$. The models for the first stages are represented by equations 1 and 2, where $f_1(\tilde{X_i})$ is a given polynomial transformation of the centered running variable. 
 $$
 \begin{aligned}
 D_i = \alpha_i + \gamma_0Z_i + \gamma_1(f_1(\tilde{X_i})) + \epsilon_i\text{ (1)}\\
-f_1(\tilde{X_i})D_i = \alpha_i + \gamma_0Z_i + \gamma_1(f_1(\tilde{X_i}))Z_i + \epsilon_i\text{ (2)}
+f_1(\tilde{X_i})D_i = \alpha_i + \gamma_2Z_i + \gamma_3(f_1(\tilde{X_i}))Z_i + \epsilon_i\text{ (2)}
 \end{aligned}
 $$
   The second stage is estimated by equation 3, where $\hat{D_i}$ represents the fitted values of equationn 1, and the various functions of $\tilde{X_i}\hat{D_i}$ represents fitted values from various functional forms of equation 2, with $f_1(\tilde{X_i}) = \tilde{X_i}^p$.
@@ -73,7 +75,7 @@ Y_i = \alpha + \tau\hat{D_i} + \beta_0\tilde{X_i}+ \beta_1(\tilde{X_i}\hat{D_i})
 $$
 
 To determine the appropriate functional form of the regression, I estimate $\tau$ using both the full sample with first, second and third order polynomials (i.e. where a $f_1(\tilde{X_i}) = \tilde{X_i};\tilde{X_i}^2; \tilde{X_i}^3$), and with local linear regression using a triangular kernel and observations within the robust bias-corrected (RBC) bandwidth (Calonico, Cattaneo, and Farrell, 2019).^[An aside regarding weights and clustering: Though counties do differ substantially in population, weighting for size would typically acheive an effect estimate appropriate for individual, rather than population inference. Additionally, although there is clear geographic clustering (e.g. counties within states), treatment (score) is not randomized at this level. Further, some clusters (namely, Delaware and Rhode Island) contain only two participating counties, leading not only to highly imbalanced cluster sizes and a substantial reduction in power.]
-  
+
 
 *Sensitivity Analyses*
 
@@ -83,10 +85,10 @@ To determine the appropriate functional form of the regression, I estimate $\tau
 ## Results
 
 *Descriptive Statistics*
-A total of 851 counties were eligible for the NHSC in 2014, 406 (47.7%) of which ultimately received a physician recruit. In general, even restricting to counties within the median estimated RBC bandwidth, eligible counties differed significantly from ineligible counties by simple difference-in-means tests. On average, counties with IMU scores below the cutoff were less populous, had greater percentages of residents living in rural areas, lower percentages of non-Hispanic White residents, and performed worse on socioeconomic and health indicators, although in most instances differences were slight and less pronounced than in the full sample (Table 2). 
+A total of 851 counties were eligible for the NHSC in 2014, 406 (47.7%) of which ultimately received a physician recruit. In general, even restricting to counties within the median estimated RBC bandwidth, eligible counties differed significantly from ineligible counties by simple difference-in-means tests. On average, counties with IMU scores below the cutoff were less populous, had greater percentages of residents living in rural areas, lower percentages of non-Hispanic White residents, and performed worse on socioeconomic and health indicators, although in most instances differences were slight (Table 2). 
 
-*First Stage Instrumentation*
-In all cases
+*First Stage*
+In the sample as a whole
 
 
 ```{r, echo = F, results='asis', warning = FALSE, message=FALSE}
@@ -558,6 +560,63 @@ tau.rdd <- c(ac.a.1$Estimate[2], ac.a.2$Estimate[2], ac.a.3$Estimate[2],
              hd.c.1$Estimate[2], hd.c.2$Estimate[2], hd.c.3$Estimate[2],
              ca.c.1$Estimate[2], ca.c.2$Estimate[2], ca.c.3$Estimate[2])
 
+iv.rdd <- c(sprintf("%.2f",round(iv.ac1$coefficients[2],2)),
+            sprintf("%.2f",round(iv.ac2$coefficients[2],2)),
+            sprintf("%.2f",round(iv.ac3$coefficients[2],2)),
+            sprintf("%.2f",round(iv.hd1$coefficients[2],2)),
+            sprintf("%.2f",round(iv.hd2$coefficients[2],2)),
+            sprintf("%.2f",round(iv.hd3$coefficients[2],2)),
+            sprintf("%.2f",round(iv.ca1$coefficients[2],2)),
+            sprintf("%.2f",round(iv.ca2$coefficients[2],2)),
+            sprintf("%.2f",round(iv.ca3$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.ac1$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.ac2$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.ac3$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.hd1$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.hd2$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.hd3$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.ca1$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.ca2$coefficients[2],2)),
+            sprintf("%.2f",round(iv.c.ca3$coefficients[2],2)))
+
+iv.ci <- c(paste0(sprintf("%.2f", round(confint(iv.ac1)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.ac1)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.ac2)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.ac2)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.ac3)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.ac3)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.hd1)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.hd1)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.hd2)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.hd2)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.hd3)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.hd3)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.ca1)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.ca1)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.ca2)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.ca2)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.ca3)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.ca3)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.ac1)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.ac1)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.ac2)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.ac2)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.ac3)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.ac3)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.hd1)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.hd1)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.hd2)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.hd2)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.hd3)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.hd3)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.ca1)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.ca1)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.ca2)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.ca2)[2,2],2))),
+       paste0(sprintf("%.2f", round(confint(iv.c.ca3)[2,1],2))," - ",
+       sprintf("%.2f", round(confint(iv.c.ca3)[2,2],2)))
+       )
+
 ci.conv <- c(paste0(round(ac.a.1$Estimate[2]- 1.96*ac.a.1$se[1],2), " - ", round(ac.a.1$Estimate[2]+ 1.96*ac.a.1$se[1],2)),
              paste0(round(ac.a.2$Estimate[2]- 1.96*ac.a.2$se[1],2), " - ", round(ac.a.2$Estimate[2]+ 1.96*ac.a.2$se[1],2)),
              paste0(round(ac.a.3$Estimate[2]- 1.96*ac.a.1$se[1],2), " - ", round(ac.a.3$Estimate[2]+ 1.96*ac.a.1$se[1],2)),
@@ -598,11 +657,11 @@ ci.robu <- c(paste0(round(ac.a.1$Estimate[2]- 1.96*ac.a.1$se[3],2), " - ", round
              paste0(round(ca.c.3$Estimate[2]- 1.96*ca.c.1$se[3],2), " - ", round(ca.c.3$Estimate[2]+ 1.96*ca.c.1$se[3],2)))
 
 #bind together for table
-res.tab <- cbind.data.frame(outcome, polys, bandwidths, tau.rdd, ci.conv, ci.robu)
+res.tab <- cbind.data.frame(outcome, polys, iv.rdd, iv.ci, bandwidths, tau.rdd, ci.conv, ci.robu)
 res.tab$bandwidths <- round(res.tab$bandwidths, 2)
 res.tab$tau.rdd <- round(res.tab$tau.rdd, 2)
 
-names(res.tab) <- c("Outcome", "Order", "BW", "Estimate", "Conventional", "Robust")
+names(res.tab) <- c("Outcome", "Order","estimate","conventional","BW", "Estimate", "Conventional", "Robust")
 
 res.tab %>%
   #this will get labelled later
@@ -613,14 +672,19 @@ res.tab %>%
   mutate(
      Conventional = cell_spec(Conventional, 
                               bold = ifelse(substr(Conventional,1,1)!= "-", T, F)),
-     Robust = cell_spec(Robust, bold = ifelse(substr(Robust,1,1)!= "-", T, F))) %>%
-  kable("latex", booktabs = T, escape = F, align= c('l', 'r', 'r', 'r', 'r', 'r'),
+     Robust = cell_spec(Robust, bold = ifelse(substr(Robust,1,1)!= "-", T, F))
+     ,estimate= cell_spec(estimate, bold = ifelse(substr(conventional,1,1) != "-", T,F)),
+     conventional = cell_spec(conventional, bold = ifelse(substr(conventional,1,1) != "-", T,F))
+     ) %>%
+  rename(` Estimate` = estimate,
+         ` Conventional` = conventional)%>%
+  kable("latex", booktabs = T, escape = F, align= c('l','r','r', 'r', 'r', 'r', 'r', 'r'),
         caption = "Effect of NHSC Participation on County-Level Mortality") %>%
   kable_styling(row_label_position = "l",) %>%
-  add_header_above(c(" ", " ", " ", " ", "95% Confidence Interval" = 2)) %>%
+  add_header_above(c(" ", " ","Full Sample" = 2, "Local" = 4)) %>%
   group_rows(start_row = 1, end_row= 9, group_label = "Age Adjusted Rate") %>%
   group_rows(start_row = 10, end_row = 18, group_label = "Crude Rate") %>%
-  footnote(general = "Estimates represent tau FRD using a local regression with a triangular kernel")%>%
+  footnote(general = "Estimates represent tau FRD estimated using either IV or a local regression with a triangular kernel")%>%
   add_footnote(label = "Bold face denotes statistical significance (p < 0.05)")
 
 ```
