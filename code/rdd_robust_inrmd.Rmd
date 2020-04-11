@@ -1,11 +1,12 @@
 ---
-title: "The Effect of the NHSC on County-Level Mortality"
+title: " Does the National Health Service Corps Help Underserved Areas?"
 author: "Sarah Van Alsten"
 output:
   pdf_document: 
     latex_engine: lualatex
     includes:  
       in_header: myheader.tex
+
 ---
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
@@ -17,6 +18,76 @@ library(rdrobust)
 library(kableExtra)
 library(tableone)
 ```
+
+
+## Background and Aims
+  Medically underserved areas are communities with a high levels of unmet healthcare needs, often secondary to insufficient access to primary care physicians (Shi et al., 2005; Starfield, Shi, & Macinko, 2005). Formal designations of underserved areas began in the late 1980s and is based on the Index of Medical Underservice (IMU), a weighted score of census or county-level infant mortality rate, primary care provider to population ratio, percent of population older than 65, and percent of population below the federal poverty line (“Development of the index of medical underservice,” 1975). Although primary care recruitment to and subsequent health improvement in underserved areas are often cited targets for healthcare and physician workgroups, medically underserved areas are consistently faced with physician shortages. Determinants of shortages include lack of physician exposure to rural health in medical school, individual preference to work in urban centers, lower pay for primary care specialties, and hospital closures (Fagan et al., 2015; Parlier, Galvin, Thach, Kruidenier, & Fagan, 2018; Rabinowitz, Diamond, Markham, & Paynter, 2001).
+  
+  To increase physician supply to underserved areas, several loan repayment and subsidized training programs for primary care practitioners have been instituted, including the National Health Service Corps (NHSC) through the U.S. Department of Health and Human Services (National Health Service Corps Scholarship Program, 2003). The NHSC grants primary care physicians up to \$50,000 in medical school loan forgiveness in exchange for two years of service in a medically underserved area, although select states offer additional compensation. Early assessments of the NHSC have shown the program to be successful in recruiting physicians to areas of high need (Holmes, 2005); unfortunately, less than half of participating physicians remain in their initial area of service after completion of the program, leading to high rates of turnover and lack of continuity in the care of underserved community members (Heisler, 2017; Pathman, Konrad, Dann, & Koch, 2004). Further, despite the purported goal of primary care recruitment programs in improving population health, few evaluations have explored the effects of the NHSC on population health indicators. 
+
+  The aim of this analysis is to determine whether participation in the NHSC reduces county-level all-cause and disease-specific mortality (herein, simply ‘mortality’).
+
+## Method
+
+  Data for this study come from three sources: one, the Area Health Resource Files (US Department of Health and Human Services, 2014) for the ratio of primary care physicians-to-population; two, the American Community Survey (ACS) (U.S. Census Bureau; American Community Survey, 2014) for population estimates, age demographics, and poverty and unemployment rates; three, the Centers for Disease Control Wide-ranging Online Data for Epidemiologic Research (CDC WONDER) (Centers for Disease Control and Prevention, 1995) for infant mortality rates, low birthweight rates, and crude all-cause, cancer, and heart disease mortality rates. Briefly, the Area Health Resource Files are a compilation of 50 separate health service and economic datasets provided by the American Medical Association, American Hospital Association, and Bureau of Health Workforce. Files are updated annually to monitor health service worker supply, regional demand for specific medical procedures (e.g. elective surgery, orthodontia), and costs of care. Among the provided indicators is a census of all physicians licensed in the U.S., disaggregated by county of practice and medical specialty. The ACS is an ongoing, nationally representative, multistage probability sample conducted by the U.S. Census Bureau as a supplement to the decennial census. Roughly 0.6% of the U.S. population is sampled for the ACS in any given year, and, because the Census Bureau contacts respondents multiple time to encourage participation, the response rate in 2014 was 96.7% (Torrieri, 2014). The ACS includes census tract-level demographics including estimates of population by age group and race/ethnicity, poverty, unemployment, and educational attainment. Finally, CDC WONDER is an online query system maintained by the National Center for Health Statistics that allows users to generate area- and period-level natality and mortality data from linkage to birth records and the National Death Index (> 90% of all deaths are accounted for in any given year) for all U.S. counties between 1999 and 2016. Area-level mortality rates disaggregated by age are provided for the 57 leading causes of death as determined by death certificate listed ICD-10 codes, although rates are suppressed for regions with fewer than 10 deaths from a specific cause. I used these cause-specific crude rates and county-level population estimates for each 10-year age stratum to standardize rates to the 2000 U.S. standard million (Anderson & Rosenberg, 1998).
+
+*Index of Medical Underservice Scoring*
+
+  A county’s eligibility to participate in the NHSC is determined by the index of medical underservice score, which quantifies an area’s degree of physician shortage relative to healthcare needs. Scores are typically generated automatically by the Health Resource and Service Administration from Area Health Resource Files, CDC WONDER, and Census data, with all scores of 62 or below eligible for NHSC participation. Although historic data on county eligibility are publicly available, actual index of medical underservice scores are only provided for counties currently eligible for the NHSC (i.e. in 2019; 2020 eligibility has not yet been determined). Thus, to obtain index of medical underservice scores for earlier years, I regenerate scores for each county in the U.S. using historic data and the Health Resource and Service Administration scoring guidelines (U.S. Department of Health and Human Services, 2015). Scores are calculated as the weighted sum of a county’s primary care physician-to-population ratio, percentage of residents age 65 or older, percentage of population at or below the federal poverty level, and infant mortality rate or, in instances where infant mortality rates were suppressed due to small sample sizes, rates of low birthweight. All score subcomponents are based on five-year averages to prevent substantial annual variation in program eligibility for treated counties (i.e. the averages of 2009-2014 components were used to calculate 2014 scores), and counties with qualifying scores automatically retain eligibility for two years following designation, regardless of subsequent scores. Though the NHSC has been in operation since the late 1970s, the current index of medical underservice scoring criteria were first implemented in 2014 such that all potential carry-overs from 2012/2013 to 2014 were disallowed. Thus, unlike for earlier periods, a county’s NHSC participation in 2014 is based strictly on its 2014 score rather than any one of its 2012, 2013, or 2014 scores. Table 1 provides a more detailed description of scoring criteria and weighting procedures.
+
+*Treatment Assignment*
+
+  Let $Z_i$ be a dichotomous variable denoting the eligibility of county $i$ to participate in the NHSC in 2014 (with 0 = ineligible, 1 = eligible). Also let $X_i$ denote the index of medical underservice score in 2014, and $D_i$ (1 = treated, 0 = control) denote actual participation in 2014. $Z_i$ is a deterministic function of $X_i$ such that:
+$$
+E[Z_i | X_i] = \begin{cases} 1 \text{ if }X_i \le 62\\0 \text{ if }X_i > 62
+\end{cases}
+$$
+  
+  Due to budget constraints, not all eligible counties receive NHSC funding; however, no ineligible counties receive funding. Therefore, $D_i$ is a probabilistic function of eligibility $f(Z_i)$ for counties below the cutoff, and deterministic for counties above such that:
+$$
+E[D_i | Z_i] = 
+\begin{cases} 
+f(Z_i) &  \text{ if }Z_i =1 \\
+0        & \text{ if }Z_i = 0
+\end{cases}
+\text{where } f(Z_i) \ne 0
+$$
+
+  Because of this feature, monotonicity is guaranteed to hold, with the exception that state governors may grant exemptions for ineligible rural counties with demonstrated primary care shortages to receive funding for rural health clinics. However, the application process for exemption is long and requires extensive administrative oversight, with few requests ultimately being approved, so the population of defiers is both known and small (a total of five counties were exempted in 2014, all of which I exclude from further analyses). As shown in Table 2, derived treatment assignment according to simulated scores adhered to known participation and eligibility rules, with zero counties above the cutoff participating and approximately one-half of those below participating. 
+
+*Model Specification*
+
+ To recover the regression discontinuity effect $\tau$ of county NHSC participation $D_i$ on 2015 mortality rate $Y_i$, I use a fuzzy regression discontinuity design and estimate $\tau$ with a two-stage least squares approach where $D$ is instrumented by $Z$. I allow for possible heterogeneity in the treatment effect as a function of $X_i$ by including interaction terms between the zero-centered transformation of $X_i$ ($\tilde{X_i}$) and eligibility $Z_i$. The models for the first stages are represented by equations 1 and 2, where $f_1(\tilde{X_i})$ is a given polynomial transformation of the centered running variable. 
+$$
+\begin{aligned}
+D_i = \alpha_i + \gamma_0Z_i + \gamma_1(f_1(\tilde{X_i})) + \epsilon_i\text{ (1)}\\
+f_1(\tilde{X_i})D_i = \alpha_i + \gamma_0Z_i + \gamma_1(f_1(\tilde{X_i}))Z_i + \epsilon_i\text{ (2)}
+\end{aligned}
+$$
+  The second stage is estimated by equation 3, where $\hat{D_i}$ represents the fitted values of equationn 1, and the various functions of $\tilde{X_i}\hat{D_i}$ represents fitted values from various functional forms of equation 2, with $f_1(\tilde{X_i}) = \tilde{X_i}^p$.
+  
+$$
+\begin{aligned}
+Y_i = \alpha + \tau\hat{D_i} + \beta_0\tilde{X_i}+ \beta_1(\tilde{X_i}\hat{D_i}) + ...\beta_p(\tilde{X_i}^p\hat{D_i}) +\mu_i\text{ (3)}
+\end{aligned}
+$$
+
+To determine the appropriate functional form of the regression, I estimate $\tau$ using both the full sample with first, second and third order polynomials (i.e. where a $f_1(\tilde{X_i}) = \tilde{X_i};\tilde{X_i}^2; \tilde{X_i}^3$), and with local linear regression using a triangular kernel and observations within the robust bias-corrected (RBC) bandwidth (Calonico, Cattaneo, and Farrell, 2019).^[An aside regarding weights and clustering: Though counties do differ substantially in population, weighting for size would typically acheive an effect estimate appropriate for individual, rather than population inference. Additionally, although there is clear geographic clustering (e.g. counties within states), treatment (score) is not randomized at this level. Further, some clusters (namely, Delaware and Rhode Island) contain only two participating counties, leading not only to highly imbalanced cluster sizes and a substantial reduction in power.]
+  
+
+*Sensitivity Analyses*
+
+  To assess potential manipulation of the running variable $X_i$, I check for discontinuity in the density of observations just above and below the cutoff score, again using the optimal bandwidth to test for discontinuity (McCrary, 2008). I also perform placebo tests using a range of false cutoff values of $X_i$ to estimate local average treatment effects at different points along the running variable. To assess balance in covariates around the cutoff, I estimate the LATE of program participation on 2014 county-level median household income, percentage of residents who live in rural areas and who are White, Black, or Hispanic, and rates of unemployment, high school graduation, uninsurance, obesity, smoking, and insufficient physical activity using the same model specifications as above. As a final robustness check, I assess the effect of 2014 NHSC participation on placebo outcomes of 1999, 2005, and 2009 age-standardized mortality rates.
+ 
+  
+## Results
+
+*Descriptive Statistics*
+A total of 851 counties were eligible for the NHSC in 2014, 406 (47.7%) of which ultimately received a physician recruit. In general, even restricting to counties within the median estimated RBC bandwidth, eligible counties differed significantly from ineligible counties by simple difference-in-means tests. On average, counties with IMU scores below the cutoff were less populous, had greater percentages of residents living in rural areas, lower percentages of non-Hispanic White residents, and performed worse on socioeconomic and health indicators, although in most instances differences were slight and less pronounced than in the full sample (Table 2). 
+
+*First Stage Instrumentation*
+In all cases
+
 
 ```{r, echo = F, results='asis', warning = FALSE, message=FALSE}
 #make a table one to show weighted scoring criteria
@@ -320,7 +391,7 @@ rownames(tab2) <- c("N", "Enrolled in NHSC",  "Poverty\\textsuperscript{1}","Old
 
 tab2 %>%
   kable("latex", align =c("c", "c", "r"), 
-        booktabs = TRUE, caption = "Sample characteristics of counties with Index of Medical Underservice (IMU) scores within the median IK bandwidth. All characteristics are based on 2014 data or, for IMU components, the five-year average of 2009-2014 data and are shown as Mean (SD). Except for total population, infant health index, and primary care ratio, all values represent proportions of county residents with given characteristic.", escape = FALSE) %>%
+        booktabs = TRUE, caption = "Sample characteristics of counties with Index of Medical Underservice (IMU) scores within the median RBC bandwidth. All characteristics are based on 2014 data or, for IMU components, the five-year average of 2009-2014 data and are shown as Mean (SD). Except for total population, infant health index, and primary care ratio, all values represent proportions of county residents with given characteristic.", escape = FALSE) %>%
   group_rows(start_row = 1, end_row = 2) %>%
   group_rows(start_row = 3, end_row = 6, group_label = "IMU Components") %>%
   group_rows(start_row = 7, end_row = 11, group_label = "County Characteristics") %>%
@@ -334,6 +405,74 @@ tab2 %>%
 ```
 
 
+```{r, echo = FALSE, message = FALSE, warning = FALSE, results='hide'}
+library(AER)
+merge.mortb$eligible <- merge.mortb$newimu14 <=62
+merge.mortb$x_tilde <- merge.mortb$newimu14 - 62
+
+iv.ac1 <- ivreg(age_adjusted_rate_2015a ~ treatment| x_tilde*eligible, data = merge.mortb)
+s1 <- summary(iv.ac1, diagnostics = TRUE)
+
+iv.ac2 <- ivreg(age_adjusted_rate_2015a ~ treatment| I(x_tilde^2)*eligible + 
+                  x_tilde*eligible, data = merge.mortb)
+s2<- summary(iv.ac2, diagnostics = TRUE)
+iv.ac3 <- ivreg(age_adjusted_rate_2015a ~ treatment| I(x_tilde^2)*eligible + I(x_tilde^3)*eligible+
+                  x_tilde*eligible, data = merge.mortb)
+s3 <- summary(iv.ac3, diagnostics = TRUE)
+
+
+iv.hd1 <- ivreg(age_adjusted_rate_2015h ~ treatment| x_tilde*eligible, data = merge.mortb)
+s4 <- summary(iv.ac1, diagnostics = TRUE)
+iv.hd2 <- ivreg(age_adjusted_rate_2015h ~ treatment| I(x_tilde^2)*eligible + 
+                  x_tilde*eligible, data = merge.mortb)
+s5 <- summary(iv.hd2, diagnostics = TRUE)
+iv.hd3 <- ivreg(age_adjusted_rate_2015h ~ treatment| I(x_tilde^2)*eligible + I(x_tilde^3)*eligible+
+                  x_tilde*eligible, data = merge.mortb)
+s6 <- summary(iv.hd3, diagnostics = TRUE)
+
+
+iv.ca1 <- ivreg(age_adjusted_rate_2015c ~ treatment| x_tilde*eligible, data = merge.mortb)
+s7 <- summary(iv.ca1, diagnostics = TRUE)
+iv.ca2 <- ivreg(age_adjusted_rate_2015c ~ treatment| I(x_tilde^2)*eligible + 
+                  x_tilde*eligible, data = merge.mortb)
+s8 <- summary(iv.ca2, diagnostics = TRUE)
+iv.ca3 <- ivreg(age_adjusted_rate_2015c ~ treatment| I(x_tilde^2)*eligible + I(x_tilde^3)*eligible+
+                  x_tilde*eligible, data = merge.mortb)
+s9 <- summary(iv.ca3, diagnostics = TRUE)
+
+######################################
+#crude
+iv.c.ac1 <- ivreg(crude_rate_2015a ~ treatment| x_tilde*eligible, data = merge.mortb)
+s10 <- summary(iv.c.ac1, diagnostics = TRUE)
+iv.c.ac2 <- ivreg(crude_rate_2015a ~ treatment| I(x_tilde^2)*eligible + 
+                  x_tilde*eligible, data = merge.mortb)
+s11 <- summary(iv.c.ac2, diagnostics = TRUE)
+iv.c.ac3 <- ivreg(crude_rate_2015a ~ treatment| I(x_tilde^2)*eligible + I(x_tilde^3)*eligible+
+                  x_tilde*eligible, data = merge.mortb)
+s12 <- summary(iv.c.ac3, diagnostics = TRUE)
+
+
+iv.c.hd1 <- ivreg(crude_rate_2015h ~ treatment| x_tilde*eligible, data = merge.mortb)
+s13 <- summary(iv.c.ac1, diagnostics = TRUE)
+iv.c.hd2 <- ivreg(crude_rate_2015h ~ treatment| I(x_tilde^2)*eligible + 
+                  x_tilde*eligible, data = merge.mortb)
+s14 <- summary(iv.c.hd2, diagnostics = TRUE)
+iv.c.hd3 <- ivreg(crude_rate_2015h ~ treatment| I(x_tilde^2)*eligible + I(x_tilde^3)*eligible+
+                  x_tilde*eligible, data = merge.mortb)
+s15 <- summary(iv.c.hd3, diagnostics = TRUE)
+
+
+iv.c.ca1 <- ivreg(crude_rate_2015c ~ treatment| x_tilde*eligible, data = merge.mortb)
+s16 <- summary(iv.c.ca1, diagnostics = TRUE)
+iv.c.ca2 <- ivreg(crude_rate_2015c ~ treatment| I(x_tilde^2)*eligible + 
+                  x_tilde*eligible, data = merge.mortb)
+s17<- summary(iv.c.ca2, diagnostics = TRUE)
+iv.c.ca3 <- ivreg(crude_rate_2015c ~ treatment| I(x_tilde^2)*eligible + I(x_tilde^3)*eligible+
+                  x_tilde*eligible, data = merge.mortb)
+s18 <- summary(iv.c.ca3, diagnostics = TRUE)
+
+```
+
 
 
 ```{r, results = 'asis', echo = FALSE, message = FALSE, warning = FALSE}
@@ -344,60 +483,60 @@ tab2 %>%
 set.seed(48104)
 # RD Effect for main outcome variable  ==> Local linear polynomial estimation with optimal bandwidth
 ac.a.1 <- rdrobust(merge.mortb$age_adjusted_rate_2015a, 
-                merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                c = 62, all=TRUE,masspoints = F)
+                merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                c = 0, all=TRUE,masspoints = F)
 ac.a.2 <- rdrobust(merge.mortb$age_adjusted_rate_2015a, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 2,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 2,masspoints = F)
 ac.a.3 <- rdrobust(merge.mortb$age_adjusted_rate_2015a, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 3,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 3,masspoints = F)
 hd.a.1 <- rdrobust(merge.mortb$age_adjusted_rate_2015h, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE,masspoints = F)
 hd.a.2 <- rdrobust(merge.mortb$age_adjusted_rate_2015h, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 2,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 2,masspoints = F)
 hd.a.3 <- rdrobust(merge.mortb$age_adjusted_rate_2015h, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 3,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 3,masspoints = F)
 ca.a.1 <- rdrobust(merge.mortb$age_adjusted_rate_2015c, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE,masspoints = F)
 ca.a.2 <- rdrobust(merge.mortb$age_adjusted_rate_2015c, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 2,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 2,masspoints = F)
 ca.a.3 <- rdrobust(merge.mortb$age_adjusted_rate_2015c, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 3,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 3,masspoints = F)
 
 ac.c.1 <- rdrobust(merge.mortb$crude_rate_2015a, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE,masspoints = F)
 ac.c.2 <- rdrobust(merge.mortb$crude_rate_2015a, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 2,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 2,masspoints = F)
 ac.c.3 <- rdrobust(merge.mortb$crude_rate_2015a, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 3,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 3,masspoints = F)
 hd.c.1 <- rdrobust(merge.mortb$crude_rate_2015h, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE,masspoints = F)
 hd.c.2 <- rdrobust(merge.mortb$crude_rate_2015h, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 2,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 2,masspoints = F)
 hd.c.3 <- rdrobust(merge.mortb$crude_rate_2015h, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 3,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 3,masspoints = F)
 ca.c.1 <- rdrobust(merge.mortb$crude_rate_2015c, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE,masspoints = F)
 ca.c.2 <- rdrobust(merge.mortb$crude_rate_2015c, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 2,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 2,masspoints = F)
 ca.c.3 <- rdrobust(merge.mortb$crude_rate_2015c, 
-                   merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                   c = 62, all=TRUE, p = 3,masspoints = F)
+                   merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                   c = 0, all=TRUE, p = 3,masspoints = F)
 
 
 #create a nice table of results
@@ -487,17 +626,17 @@ res.tab %>%
 ```
 
 ```{r, fig.cap='McCrary Density Test shows no evidence of sorting at the cutoff (p = 0.68)', results='hide', fig.pos = 'h'}
-`IMU Score 2014`<- merge.mortb$imu14
-rddapp::dc_test(`IMU Score 2014`, 62, bw = 10.11)
+`Transformed IMU Score 2014`<- merge.mortb$imu14 -62
+rddapp::dc_test(`Transformed IMU Score 2014`, 0, bw = 10.11)
 
 ```
 
 ```{r}
 #figure showing sensitivity to bw choice
 
-make_rdd_plot_data <- function(outcome, cut = merge.mortb$newimu14, covars = NULL){
+make_rdd_plot_data <- function(outcome, cut = merge.mortb$x_tilde, covars = NULL){
   ik.bw <- IKbandwidth(Y = outcome,
-                       X = cut, cutpoint = 62)
+                       X = cut, cutpoint = 0)
 
   tempframe <- cbind.data.frame(c(1:24, ik.bw),
                                 rep(0,25),
@@ -516,7 +655,7 @@ make_rdd_plot_data <- function(outcome, cut = merge.mortb$newimu14, covars = NUL
     j <- tempframe[i,1]
       rd <- rdrobust(y = outcome, 
                 x = cut, fuzzy = merge.mortb$treatment, h = j,
-                c = 62, all=TRUE , masspoints = F, p = 2)
+                c = 0, all=TRUE , masspoints = F, p = 2)
      tempframe[i,] <- c(j,
                        rd$Estimate[2],
                        rd$Estimate[2],
@@ -619,6 +758,35 @@ cancer.age / cancer.crude+ plot_annotation(title = "Effect of NHSC on Cancer Mor
 
 ## Supplementary Material and Sensitivity Analyses
 
+### Tests of Weak Instruments
+
+```{r}
+#table for weak instruments
+weak.int <- cbind.data.frame(c("All-Cause Mortality", "All-Cause Mortality",
+                     "Heart Disease Mortality","Heart Disease Mortality",
+                     "Cancer Mortality","Cancer Mortality"),
+                             rbind(s1$diagnostics[1,3:4],s10$diagnostics[1,3:4],
+                                   s4$diagnostics[1,3:4],s13$diagnostics[1,3:4],
+                                   s7$diagnostics[1,3:4],s16$diagnostics[1,3:4]),
+                             rbind(s2$diagnostics[1,3:4],s11$diagnostics[1,3:4],
+                                   s5$diagnostics[1,3:4],s14$diagnostics[1,3:4],
+                                   s8$diagnostics[1,3:4],s17$diagnostics[1,3:4]),
+                             rbind(s3$diagnostics[1,3:4],s12$diagnostics[1,3:4],
+                                   s6$diagnostics[1,3:4],s15$diagnostics[1,3:4],
+                                   s9$diagnostics[1,3:4],s18$diagnostics[1,3:4])
+                             )
+weak.int[weak.int == 0] <- "< 0.001"
+weak.int <- weak.int[c(1,3,5),]
+names(weak.int) <- c("Outcome","F-Statisic", "P-value", "F-Statisic", "P-value", "F-Statisic", "P-value")
+
+weak.int %>%
+  kableExtra::kable("latex", booktabs = T, escape = T, align = c(rep("r",6)),
+                    caption = "Tests of Weak Instruments For IMU Scores and Eligibility")%>%
+  add_header_above(c("Outcome", "Polynomial Order"=6)) %>%
+  footnote(general = "Test statistics differ slightly by outcome given missing data on heart disease and cancer mortality")
+
+```
+
 
 ### FRDD Specifications
 ```{r}
@@ -627,98 +795,98 @@ cancer.age / cancer.crude+ plot_annotation(title = "Effect of NHSC on Cancer Mor
 #make plots to pick ones to use
 a1<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015a, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 1, title = "Age Adjusted All-Cause: Linear",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 1, title = "Age Adjusted All-Cause: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 a2<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015a, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 2, title = "Age Adjusted All-Cause: Quadratic",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 2, title = "Age Adjusted All-Cause: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 a3<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015a, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 3,title = "Age Adjusted All-Cause: Cubic",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 3,title = "Age Adjusted All-Cause: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 
 h1<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015h, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 1, title = "Age Adjusted Heart Disease: Linear",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 1, title = "Age Adjusted Heart Disease: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 h2<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015h, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 2, title = "Age Adjusted Heart Disease: Quadratic",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 2, title = "Age Adjusted Heart Disease: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 h3<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015h, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 3,title = "Age Adjusted Heart Disease: Cubic",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 3,title = "Age Adjusted Heart Disease: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 
 c1<- 
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015c, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 1, title = "Age Adjusted Cancer: Linear",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 1, title = "Age Adjusted Cancer: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 c2<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015c, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 2, title = "Age Adjusted Heart Cancer: Quadratic",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 2, title = "Age Adjusted Heart Cancer: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 c3<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015c, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 3,title = "Age Adjusted Heart Cancer: Cubic",
-                 x.label = "2014 IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 3,title = "Age Adjusted Heart Cancer: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
 
 a4<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015a, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 1, title = "Crude All-Cause: Linear",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 1, title = "Crude All-Cause: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 a5<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015a, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 2, title = "Crude All-Cause: Quadratic",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 2, title = "Crude All-Cause: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 a6<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015a, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 3,title = "Crude All-Cause: Cubic",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 3,title = "Crude All-Cause: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 
 h4<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015h, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 1, title = "Crude Heart Disease: Linear",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 1, title = "Crude Heart Disease: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 h5<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015h, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 2, title = "Crude Heart Disease: Quadratic",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 2, title = "Crude Heart Disease: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 h6<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015h, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 3,title = "Crude Heart Disease: Cubic",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 3,title = "Crude Heart Disease: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 c4<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015c, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 1, title = "Crude Cancer: Linear",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 1, title = "Crude Cancer: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 c5<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015c, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 2, title = "Crude Heart Cancer: Quadratic",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 2, title = "Crude Heart Cancer: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 c6<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015c, 
-                 merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-                 c = 62, all=TRUE, p = 3,title = "Crude Heart Cancer: Cubic",
-                 x.label = "2014 IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
+                 merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+                 c = 0, all=TRUE, p = 3,title = "Crude Heart Cancer: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Crude Rate", ci = 95, hide = T)
 ```
 
 
@@ -734,7 +902,7 @@ a1$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(a1$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = a1$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -750,7 +918,7 @@ a2$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(a2$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = a2$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -763,7 +931,7 @@ a3$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(a3$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = a3$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -776,7 +944,7 @@ h1$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(h1$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = h1$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -792,7 +960,7 @@ h2$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(h2$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = h2$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -805,7 +973,7 @@ h3$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(h3$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = h3$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -818,7 +986,7 @@ c1$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(c1$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = c1$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -831,7 +999,7 @@ c2$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(c2$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = c2$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -844,7 +1012,7 @@ c3$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(c3$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = c3$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -858,7 +1026,7 @@ a4$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(a4$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = a4$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -871,7 +1039,7 @@ a5$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(a5$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = a5$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -884,7 +1052,7 @@ a6$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(a6$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = a6$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -897,7 +1065,7 @@ h4$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(h4$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = h4$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -910,7 +1078,7 @@ h5$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(h5$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = h5$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -923,7 +1091,7 @@ h6$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(h6$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = h6$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -936,10 +1104,10 @@ c4$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(c4$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = c4$vars_poly) +
-  #labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
+  labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
   ggtitle("Linear")
 
 can5 <- 
@@ -949,7 +1117,7 @@ c5$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(c5$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = c5$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -962,7 +1130,7 @@ c6$vars_bins %>%
   ggplot(aes(x = rdplot_mean_bin, y = rdplot_mean_y)) + 
   geom_point() +
   geom_ribbon(aes(ymin = rdplot_ci_l, ymax = rdplot_ci_r), alpha = .1) + theme_bw() +
-  geom_vline(xintercept = 62, linetype = "dashed", color = "darkgrey") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "darkgrey") +
   geom_line(color= ifelse(c6$vars_poly$rdplot_x <= 62, "red", "blue"),
             aes(x=rdplot_x, y= rdplot_y), data = c6$vars_poly) +
   labs(x = "2014 Index of Medical Score", y = "Mortality Rate") +
@@ -993,58 +1161,80 @@ c6$vars_bins %>%
 
 ```{r}
 hhinc <- rdrobust(y = merge.mortb$median_household_income_raw_value_14, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 unemp <- rdrobust(y = merge.mortb$unemployment_rate_2014, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 hsgrad <- rdrobust(y = merge.mortb$high_school_graduation_raw_value_14, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 unins <- rdrobust(y = merge.mortb$uninsured_2014, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 obesi <- rdrobust(y = merge.mortb$adult_obesity_2012_2014, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 smoke <- rdrobust(y = merge.mortb$adult_smoking_value, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 inact <- rdrobust(y = merge.mortb$physical_inactivity_2012_2014, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 white <- rdrobust(y = merge.mortb$percent_non_hispanic_white_raw_value_14, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 black <- rdrobust(y = merge.mortb$percent_non_hispanic_african_american_raw_value_14, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 hisp <- rdrobust(y = merge.mortb$percent_hispanic_raw_value_14, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 rura <- rdrobust(y = merge.mortb$percent_rural_raw_value_14, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 nine <- rdrobust(y = merge.mortb$age_adjusted_rate_1999a, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 five <- rdrobust(y = merge.mortb$age_adjusted_rate_2009a, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 four <- rdrobust(y = merge.mortb$age_adjusted_rate_2004a, 
-              x = merge.mortb$newimu14, fuzzy = merge.mortb$treatment,
-              c = 62, all=TRUE , masspoints = F, p = 2)
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
+nineh <- rdrobust(y = merge.mortb$age_adjusted_rate_1999h, 
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
+fiveh <- rdrobust(y = merge.mortb$age_adjusted_rate_2009h, 
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
+fourh <- rdrobust(y = merge.mortb$age_adjusted_rate_2004h, 
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
+ninec <- rdrobust(y = merge.mortb$age_adjusted_rate_1999c, 
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
+fivec <- rdrobust(y = merge.mortb$age_adjusted_rate_2009c, 
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
+fourc <- rdrobust(y = merge.mortb$age_adjusted_rate_2004c, 
+              x = merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
+              c = 0, all=TRUE , masspoints = F, p = 2)
 
 #create a nice table of results
 outcome <- c("Median HH Income", "Unemployment", "High School Graduation",
              "Uninsured", "Adult Obesity", "Smoking", "Physical Inactivity",
              "Percent White", "Percent Black", "Percent Hispanic", "Percent Rural",
-             "1999 All Cause Mortality", "2004 All Cause Mortality", "2009 All Cause Mortality")
+             "1999 All Cause Mortality", "2004 All Cause Mortality", "2009 All Cause Mortality",
+             "1999 Heart Disease Mortality", "2004 Heart Disease Mortality", "2009 Heart Disease Mortality",
+             "1999 Cancer Mortality", "2004 Cancer Mortality", "2009 Cancer Mortality")
 
 tau.rdd <- c(hhinc$Estimate[2], unemp$Estimate[2], hsgrad$Estimate[2],
              unins$Estimate[2], obesi$Estimate[2], smoke$Estimate[2],
              inact$Estimate[2], white$Estimate[2], black$Estimate[2],
-             hisp$Estimate[2], rura$Estimate[2], nine$Estimate[2], four$Estimate[2],
+             hisp$Estimate[2], rura$Estimate[2], nine$Estimate[2],
+             four$Estimate[2], five$Estimate[2], nineh$Estimate[2], fourh$Estimate[2],
+             fiveh$Estimate[2], ninec$Estimate[2], fourc$Estimate[2],
              five$Estimate[2])
 
 ci.robu <- c(paste0(round(hhinc$ci[3,1],2), " - ", round(hhinc$ci[3,2],2)),
@@ -1060,7 +1250,13 @@ ci.robu <- c(paste0(round(hhinc$ci[3,1],2), " - ", round(hhinc$ci[3,2],2)),
              paste0(round(rura$ci[3,1],2), " - ", round(rura$ci[3,2],2)),
              paste0(round(nine$ci[3,1],2), " - ", round(nine$ci[3,2],2)),
              paste0(round(four$ci[3,1],2), " - ", round(four$ci[3,2],2)),
-             paste0(round(five$ci[3,1],2), " - ", round(five$ci[3,2],2))
+             paste0(round(five$ci[3,1],2), " - ", round(five$ci[3,2],2)),
+             paste0(round(nineh$ci[3,1],2), " - ", round(nineh$ci[3,2],2)),
+             paste0(round(fourh$ci[3,1],2), " - ", round(fourh$ci[3,2],2)),
+             paste0(round(fiveh$ci[3,1],2), " - ", round(fiveh$ci[3,2],2)),
+             paste0(round(ninec$ci[3,1],2), " - ", round(ninec$ci[3,2],2)),
+             paste0(round(fourc$ci[3,1],2), " - ", round(fourc$ci[3,2],2)),
+             paste0(round(fivec$ci[3,1],2), " - ", round(fivec$ci[3,2],2))
              )
 
 #bind together for table
@@ -1083,147 +1279,12 @@ res.tab %>%
 ```
 
 
-```{r, include=FALSE, eval=FALSE}
-#run rdds with outcomes that I wouldn't expect to be associated
-#sensitivity analyses: using 1999 mortality as an outcome
-make_rdd_plot_data <- function(outcome, cut = merge.mortb$newimu14, covars = NULL){
-  ik.bw <- IKbandwidth(Y = outcome,
-                       X = cut, cutpoint = 62)
-
-  tempframe <- cbind.data.frame(c(1:24, ik.bw),
-                                rep(0,25),
-                                rep(0,25),
-                                rep(0,25),
-                                rep(0,25),
-                                rep(0,25),
-                                rep(0,25),
-                                rep(0,25))
-
-  names(tempframe) <- c("bw", "estimate_bc", "estimate_us", "upper_bc","lower_bc",
-                         "upper_rob","lower_rob",
-                         "nObs")
-
-  for (i in 1:nrow(tempframe)){
-    j <- tempframe[i,1]
-      rd <- rdrobust(y = outcome, 
-                x = cut, fuzzy = merge.mortb$treatment, h = j,
-                c = 62, all=TRUE , masspoints = F, p = 2)
-     tempframe[i,] <- c(j,
-                       rd$Estimate[2],
-                       rd$Estimate[2],
-                       rd$ci[2,2], rd$ci[2,1],
-                       rd$ci[3,2], rd$ci[3,1],
-                       sum(rd$N_h))
-  }
-  
-  
-  return(tempframe)  
-}
-
-plot_rdd_data <- function(dat){
-  int <- dat[25,1] #ik bw
-  ymin <- min(dat$lower_rob)
-  ymax <- max(dat$upper_rob)
-  dat %>%
-    ggplot(aes(x = bw, y = estimate_bc)) + geom_point(color = "black") +
-    geom_ribbon(aes(ymin = lower_rob, ymax = upper_rob), alpha =.3, fill = "#00BFC4") +
-    geom_point(aes(x = bw, y = estimate_us), color = "#F8766D") + 
-    geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "Absolute Distance From Cutoff", y = "LATE")+
-    geom_text(aes(label = paste(nObs)), nudge_y = .16,
-              check_overlap = TRUE, angle = 60)+
-    geom_vline(xintercept = int, linetype = "dashed", color = "darkgrey")+
-    geom_hline(yintercept = 0, color = "black")+
-    theme(panel.grid.minor.x = element_blank()) #+
-   # ylim(c(ymin + 50 , ymax - 50))
-
-}
-
-
-plot_rdd_data3 <- function(dat){
-  int <- dat[25,1] #ik bw
-  ymin <- min(dat$lower_rob)
-  ymax <- max(dat$upper_rob)
-  dat %>%
-    ggplot(aes(x = bw, y = estimate_bc)) + geom_point(color = "black") +
-    geom_ribbon(aes(ymin = lower_rob, ymax = upper_rob), alpha =.3, fill = "#00BFC4") +
-    geom_point(aes(x = bw, y = estimate_us), color = "#F8766D") + 
-    geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "Absolute Distance From Cutoff", y = "LATE")+
-    geom_text(aes(label = paste(nObs)), nudge_y = .6,
-              check_overlap = TRUE, angle = 60)+
-    geom_vline(xintercept = int, linetype = "dashed", color = "darkgrey")+
-    geom_hline(yintercept = 0, color = "black")+
-    theme(panel.grid.minor.x = element_blank()) #+
-   # ylim(c(ymin + 50 , ymax - 50))
-
-}
-
-plot_rdd_data2 <- function(dat){
-  int <- dat[25,1] #ik bw
-  ymin <- min(dat$lower_rob)
-  ymax <- max(dat$upper_rob)
-  dat %>%
-    ggplot(aes(x = bw, y = estimate_bc)) + geom_point(color = "black") +
-    geom_ribbon(aes(ymin = lower_rob, ymax = upper_rob), alpha =.3, fill = "#00BFC4") +
-    geom_point(aes(x = bw, y = estimate_us), color = "#F8766D") + 
-    geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "Absolute Distance From Cutoff", y = "LATE")+
-    geom_text(aes(label = paste(nObs)), nudge_y = 10000,
-              check_overlap = TRUE, angle = 60)+
-    geom_vline(xintercept = int, linetype = "dashed", color = "darkgrey")+
-    geom_hline(yintercept = 0, color = "black")+
-    theme(panel.grid.minor.x = element_blank()) #+
-   # ylim(c(ymin + 50 , ymax - 50))
-
-}
-```
-
-
-```{r, fig.width = 8, fig.height = 10, fig.cap = 'Fuzzy RDD Estimated Effects on: A = 2014 High School Graduation Rate, B = 2014 Unemployment Rate, C = 2014 Median Household Income. As for the outcomes of interest, LATEs are estimated with as local regressions with a triangular kernel and a second order polynomial. Dashed line shows IK bandwidth, blue bands show robust 95% CI and dark bands show standard 95% CI.', include = FALSE, eval = FALSE}
-
-plac1 <-
-make_rdd_plot_data(outcome = merge.mortb$high_school_graduation_raw_value_14) %>%
-  plot_rdd_data3()
-
-plac2 <- 
-make_rdd_plot_data(outcome = merge.mortb$unemployment_rate_2014) %>%
-  plot_rdd_data()
-
-plac3 <- 
-make_rdd_plot_data(outcome = merge.mortb$median_household_income_raw_value_14) %>%
-  plot_rdd_data2()
-
-plac1 / plac2 / plac3 + plot_annotation(tag_levels = "A")
-
-
-```
-
-
-```{r,fig.width = 8, fig.height = 10, fig.cap = 'Fuzzy RDD Estimated Effects on: A = 2014 Adult Cigarette Smoking Rate, B = 2014 Adult Obesity Rate, C = 2014 Uninsured Rate. LATEs are estimated with as local regressions with a triangular kernel and a second order polynomial. Dashed line shows IK bandwidth, blue bands show robust 95% CI and dark bands show standard 95% CI.',include=FALSE, eval = FALSE}
-
-
-plac4 <- 
-make_rdd_plot_data(outcome = merge.mortb$adult_smoking_value) %>%
-  plot_rdd_data()
-
-plac5 <- 
-make_rdd_plot_data(outcome = merge.mortb$adult_obesity_2012_2014) %>%
-  plot_rdd_data()
-
-plac6 <- 
-make_rdd_plot_data(outcome = merge.mortb$uninsured_2014) %>%
-  plot_rdd_data()
-
-
-plac4 / plac5 / plac6 + plot_annotation(tag_levels = "A")
-
-```
-
 ### Placebo Tests: Using Alternate Cutoffs
+Here, the reader may note that I have not included placebo cutoffs above the actual cutoff. The reason being is that it is generally suggested to restrict the sample for placebo cutoffs to only observations above or below the true cutoff in order to not impose constraints at the actual value of the cutoff into the local regression. Restricting to only observations above the sample leaves no possibility for instrumentation, as 0 counties above the cutoff were eligible for the program.
 
-```{r}
-make_rdd_plot_data_placebo <- function(outcome, cut = merge.mortb$newimu14, cutoff){
+```{r, fig.cap="Placebo Thresholds. Ribbon Shows RBC 95% Confidence Interval"}
+make_rdd_plot_data_placebo <- function(outcome, cut = data$x_tilde, cutoff){
+
   ik.bw <- IKbandwidth(Y = outcome,
                        X = cut, cutpoint = cutoff)
 
@@ -1243,7 +1304,7 @@ make_rdd_plot_data_placebo <- function(outcome, cut = merge.mortb$newimu14, cuto
   for (i in 1:nrow(tempframe)){
     j <- tempframe[i,1]
       rd <- rdrobust(y = outcome, 
-                x = cut, fuzzy = merge.mortb$treatment, h = ik.bw,
+                x = cut, fuzzy = data$treatment, h = ik.bw,
                 c = cutoff, all=TRUE , masspoints = F, p = 2)
      tempframe[i,] <- c(j,
                        rd$Estimate[2],
@@ -1257,31 +1318,30 @@ make_rdd_plot_data_placebo <- function(outcome, cut = merge.mortb$newimu14, cuto
   return(tempframe)  
 }
 
+data <- merge.mortb[merge.mortb$x_tilde<0,]
 plac.cut <- 
-purrr::map_df(.x = seq(40, 90, 1), 
-               .f = ~make_rdd_plot_data_placebo(outcome = merge.mortb$age_adjusted_rate_2015a,
+purrr::map_df(.x = seq(-21, -.4, .1), 
+               .f = ~make_rdd_plot_data_placebo(outcome = data$age_adjusted_rate_2015a,
                                                cutoff = .x))
-plac.cut$cutoff <- 40:90
+plac.cut$cutoff <- seq(-21,-.4,.1)
 
-plot_rdd_data <- function(dat){
-  int <- dat[25,1] #ik bw
-  dat <- dat %>% filter(bw >= 2)
-  ymin <- min(dat$lower_rob)
-  ymax <- max(dat$upper_rob)
-  dat %>%
-    ggplot(aes(x = bw, y = estimate_bc)) + geom_point(color = "black") +
-    geom_ribbon(aes(ymin = lower_rob, ymax = upper_rob), alpha =.3, fill = "#00BFC4") +
-    geom_point(aes(x = bw, y = estimate_us), color = "#F8766D") + 
+
+  plac.cut %>%
+    filter(lower_rob > -1000) %>%
+    ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
+    #geom_ribbon(aes(ymin = lower_rob, ymax = upper_rob), alpha =.3, fill = "#00BFC4") +
+    #geom_point(aes(x = cutoff, y = estimate_us), color = "#F8766D") + 
     geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "Absolute Distance From Cutoff", y = "LATE")+
-    geom_text(aes(label = paste(nObs)), nudge_y = 250, nudge_x = -.2,
-              check_overlap = TRUE, angle = 60)+
-    geom_vline(xintercept = int, linetype = "dashed", color = "darkgrey")+
+    theme_bw() + labs(x = "Placebo Cutoff Value (0 = true)", y = "LATE")+
+    #geom_text(aes(label = paste(nObs)), nudge_y = 250, nudge_x = -.2,
+    #          check_overlap = TRUE, angle = 60)+
     geom_hline(yintercept = 0, color = "black")+
-    xlim(c(2,23))+ theme(panel.grid.minor.x = element_blank()) +
-    ylim(c(ymin + 50 , ymax - 50))
+    geom_vline(xintercept = 0, color = "red")+
+    xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
+    coord_cartesian(ylim = c(-1000, 2000))
+   
 
-}
+
 
 
 
