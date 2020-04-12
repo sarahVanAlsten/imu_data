@@ -101,13 +101,16 @@ For both age-standardized and crude all-cause mortality, the RBC estimate chosen
 Similar patterns occurred in both heart disease and cancer-specific mortality models (Figures 3 and 4). The positive estimated effects for age-standardized heart disease and cancer mortality were contained within the RBC 95% confidence interval for all alternative bandwidths excepting the narrowest (absolute distance of 4 points from the cutoff), after which estimated effects rose steeply. All regression discontinuity effects near the optimal bandwidth were nonsignificant but again indicated a higher mortality rate for treated counties. For crude rates, the effect of the NHSC on mortality were consistently null and small in magnitude. $\newline$
 
 
-*Additional Sensitivity Analyses*
+*Placebo Outcomes*
 
 The of placebo fuzzy regression discontinuities assessing covariate balance and program participation on pretreatment outcomes suggested that participation in the NHSC was not associated with placebo outcomes (Table 5). Encouragingly for the known possible exogeneity violation by IMU score components, NHSC participation was not associated with either percent county residents below the federal poverty line ($\tau$ = -2.37, RBC 95% CI = -5.76 - 1.02) or percent of county residents age 65 or older ($\tau$ = 2.77, RBC 95% CI = -1.36 - 6.91). Placebo treatment effects for all sociodemographic characteristics were non-significant, although there was some indication that participating counties had higher uninsured rates ($\tau$ = 0.04, RBC 95% CI = - 0.01 - 0.08), smoking rates ($\tau$ = 0.06, RBC 95% CI = -0.02 - 0.13), and lower percentages of non-Hispanic White residents ($\tau$ = -0.09, RBC 95% CI = -0.28 - 0.10).
 
-However, the local effects of 2014 NHSC participation on pretreatment mortality rates were significant in several instances, namely, for 1999 age-standardized all cause mortality ($\tau$ = 119.04, RBC 95% CI = 5.29 - 232.8) and 2009 age-standardized cancer mortality rate ($\tau$ = 89.28, 95% CI = 10.23 - 85.08). There are two possible explanations for this result. One, despite the change to eligbility criteria in 2014, some counties may have participated in the NHSC prior to 2014, meaning that pretreatment "effects" are a byproduct of past eligibility. This is likely more applicable to 2009 than 1999 mortality, given serial correlation of both mortality rate and eligibility determinants. Two, there may be reverse causality such that counties with higher historica mortality are preferentially chosen by the Department of Health and Human Services or by physicians themselves to receive funding.
+However, the local effects of 2014 NHSC participation on pretreatment mortality rates were significant in several instances, namely, for 1999 age-standardized all cause mortality ($\tau$ = 119.04, RBC 95% CI = 5.29 - 232.8) and 2009 age-standardized cancer mortality rate ($\tau$ = 89.28, 95% CI = 10.23 - 85.08). There are two possible explanations for this result. One, despite the change to eligbility criteria in 2014, some counties may have participated in the NHSC prior to 2014, meaning that pretreatment "effects" are a byproduct of past eligibility. This is likely more applicable to 2009 than 1999 mortality, given serial correlation of both mortality rate and eligibility determinants. Two, there may be reverse causality such that counties with higher historica mortality are preferentially chosen by the Department of Health and Human Services or by physicians themselves to receive funding.$\newline$
 
-$\newline$
+*Placebo Cutoffs*
+Using the sample of counties below the cutoff, there was consistently no local regression discontinuity effect on age-standardized or crude all cause mortality when setting placebo thresholds at IMU scores 10 to 20 points below the true threshold (i.e. for IMU scores of 42 - 52; Figure 9). With the exception of a placebo threshold 6 points below the true threshold, at which the estimated $\tau$ was larger than the 'true' RD effect (excess of 497 deaths versus 161 per 10,000 person-years) and significant, placebo thresholds closer to the true cutoff also showed null effects but were larger in magnitude and less stable than those observed further from the true threshold. At no placebo cutoff were estimated effects for crude heart disease mortality significant (Figure 10, bottom), but signifcant effects were observed at placebo cutoffs 17 and 6.8 points below the true threshold (Figure 10, top). As for all cause mortality, these estimated effects were substantially larger than the true discontinuity effect, indicating an excess of 166 and 302 versus 55 deaths from heart disease per 10,000 person-years, respectively. As depicted in Figure 11, placebo thresholds for both age-standardized and crude cancer mortality yielded similar null effects, again with the exception of a placebo threshold 5 points below the true cutoff for age-standardized rates ($\tau$ = 120.88) and 4.3 points below the threshold for crude rates ($\tau$ = 1026.53). 
+
+Given the relative consistency of identifying an effect at false cutoff scores in the range of 55 - 58 (4 to 7 points below an IMU score of 62), I performed additional exploration of treatement probability at various IMU scores (Figure 12). The anticipated probabilty of receiving an NHSC physician is approximatley equal for counties with IMU scores between 52 and 58, after which probability begins to drop, reaching zero [as expected] for scores greater than 62. Whether this implies that
 
 *Limitations*
 Nonetheless, there were a number of limitations which may have impacted results, the most prominent being a lack of data on IMU scores themselves. Identification in regression discontinuity is dependent upon *a priori* knowledge of treatment assignment according to, as well as consistent measurement of, the running variable. Though the data sources and scoring mechanism I used to regenerate the IMU are purportedly the same as those employed by the Department of Health and Human Services in designating underserved areas and all counties simulated as ineligible were in fact ineligible it is probable that measurement error occurred.^[Apparently, a lack of published IMU scores has posed a barrier to researchers other than the author. In early fall of 2019, a Freedom Of Information Act request was posed to the Department of Health and Human Services (DHHS) to release historic scores, to which DHHS has yet to respond.] Second, the estimand may have limited external validity. I exploit the change in eligibility ruling in 2014 for identification, but it possible that cumulative effects of the program may be more beneficial than those from its early implementation. For instance, new rulings are often accompanied by administrative difficulties and consume additional time and resources which may have negatively affected program implementation. The estimand also refers only to counties near the cutoff which actually receive a physician, which may be of less interest to counties that are more highly underserved.^[If the effect had indicated benefit, one might argue that the benefit applies only to compliers, so there would be a question of net positive. Such an argument doesn't necessarily apply in this case, where substantial harm may be done.]
@@ -731,7 +734,7 @@ res.tab %>%
   kable_styling(row_label_position = "l",) %>%
   add_header_above(c("", "", "", "95% CI","", "", "95% CI"=2)) %>%
   add_header_above(c(" ", " ","Full Sample" = 2, "Local" = 4)) %>%
-  group_rows(start_row = 1, end_row= 9, group_label = "Age Adjusted Rate") %>%
+  group_rows(start_row = 1, end_row= 9, group_label = "Age-Standardized Rate") %>%
   group_rows(start_row = 10, end_row = 18, group_label = "Crude Rate") %>%
   footnote(general = "Estimates represent tau FRD estimated using either IV or a local regression with a triangular kernel")%>%
   add_footnote(label = "Bold face denotes statistical significance (p < 0.05)")
@@ -919,50 +922,50 @@ grViz("
 a1<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015a, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 1, title = "Age Adjusted All-Cause: Linear",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 1, title = "Age-Standardized All-Cause: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 a2<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015a, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 2, title = "Age Adjusted All-Cause: Quadratic",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 2, title = "Age-Standardized All-Cause: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 a3<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015a, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 3,title = "Age Adjusted All-Cause: Cubic",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 3,title = "Age-Standardized All-Cause: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 
 h1<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015h, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 1, title = "Age Adjusted Heart Disease: Linear",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 1, title = "Age-Standardized Heart Disease: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 h2<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015h, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 2, title = "Age Adjusted Heart Disease: Quadratic",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 2, title = "Age-Standardized Heart Disease: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 h3<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015h, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 3,title = "Age Adjusted Heart Disease: Cubic",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 3,title = "Age-Standardized Heart Disease: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 
 c1<- 
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015c, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 1, title = "Age Adjusted Cancer: Linear",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 1, title = "Age-Standardized Cancer: Linear",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 c2<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015c, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 2, title = "Age Adjusted Heart Cancer: Quadratic",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 2, title = "Age-Standardized Heart Cancer: Quadratic",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 c3<-
 rdrobust::rdplot(merge.mortb$age_adjusted_rate_2015c, 
                  merge.mortb$x_tilde, fuzzy = merge.mortb$treatment,
-                 c = 0, all=TRUE, p = 3,title = "Age Adjusted Heart Cancer: Cubic",
-                 x.label = "Transformed IMU Score", y.label = "Age Adjusted Rate", ci = 95, hide = T)
+                 c = 0, all=TRUE, p = 3,title = "Age-Standardized Heart Cancer: Cubic",
+                 x.label = "Transformed IMU Score", y.label = "Age-Standardized Rate", ci = 95, hide = T)
 
 a4<-
 rdrobust::rdplot(merge.mortb$crude_rate_2015a, 
@@ -1417,7 +1420,7 @@ res.tab %>%
 ### Placebo Tests: Using Alternate Cutoffs
 Here, the reader may note that I have not included placebo cutoffs above the actual cutoff. The reason being is that it is generally suggested to restrict the sample for placebo cutoffs to only observations above or below the true cutoff in order to not impose constraints at the actual value of the cutoff into the local regression. Restricting to only observations above the sample leaves no possibility for instrumentation, as 0 counties above the cutoff were eligible for the program.
 
-```{r, fig.cap="Placebo Thresholds. Ribbon Shows RBC 95% Confidence Interval"}
+```{r, fig.cap="LATE at placebo cutoffs. Ribbon Shows RBC 95% Confidence Interval"}
 make_rdd_plot_data_placebo <- function(outcome, cut = data$x_tilde, cutoff){
   
   ik.bw <- IKbandwidth(Y = outcome,
@@ -1443,7 +1446,7 @@ make_rdd_plot_data_placebo <- function(outcome, cut = data$x_tilde, cutoff){
                 c = cutoff, all=TRUE , masspoints = F, p = 2)
      tempframe[i,] <- c(j,
                        rd$Estimate[2],
-                       rd$Estimate[2],
+                       rd$Estimate[1],
                        rd$ci[2,2], rd$ci[2,1],
                        rd$ci[3,2], rd$ci[3,1],
                        sum(rd$N_h))
@@ -1460,27 +1463,135 @@ purrr::map_df(.x = seq(-21, -.4, .1),
                                                cutoff = .x))
 plac.cut$cutoff <- seq(-21,-.4,.1)
 
-
-  plac.cut %>%
+pp1<-
+plac.cut %>%
     filter(lower_rob > -1000) %>%
     ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
-    #geom_ribbon(aes(ymin = lower_rob, ymax = upper_rob), alpha =.3, fill = "#00BFC4") +
-    #geom_point(aes(x = cutoff, y = estimate_us), color = "#F8766D") + 
     geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "Placebo Cutoff Value (0 = true)", y = "LATE")+
-    #geom_text(aes(label = paste(nObs)), nudge_y = 250, nudge_x = -.2,
-    #          check_overlap = TRUE, angle = 60)+
+    theme_bw() + labs(x = "", y = "LATE")+
     geom_hline(yintercept = 0, color = "black")+
     geom_vline(xintercept = 0, color = "red")+
     xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
-    coord_cartesian(ylim = c(-1000, 2000))
-   
+    coord_cartesian(ylim = c(-1000, 2000))+
+    ggtitle("2015 age-standardized All-Cause Mortality")+
+  theme(axis.text.x = element_blank())
+  
+plac.cutb <- 
+purrr::map_df(.x = seq(-21, -.4, .1), 
+               .f = ~make_rdd_plot_data_placebo(outcome = data$crude_rate_2015a,
+                                               cutoff = .x))
+plac.cutb$cutoff <- seq(-21,-.4,.1)
 
+pp2<-
+plac.cutb %>%
+    filter(lower_rob > -1000) %>%
+    ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
+    geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
+    theme_bw() + labs(x = "Placebo Cutoff Value (0 = true)", y = "LATE")+
+    geom_hline(yintercept = 0, color = "black")+
+    geom_vline(xintercept = 0, color = "red")+
+    xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
+    coord_cartesian(ylim = c(-1000, 2000))+
+    ggtitle("2015 Crude All-Cause Mortality")
 
-
+pp1/pp2
 
 
 ```
 
+```{r, fig.cap = 'LATE at Placebo Thresholds. Ribbon Shows RBC 95% CI'}
+plac.cut2 <- 
+purrr::map_df(.x = seq(-21, -.4, .1), 
+               .f = ~make_rdd_plot_data_placebo(outcome = data$age_adjusted_rate_2015h,
+                                               cutoff = .x))
+plac.cut2$cutoff <- seq(-21,-.4,.1)
 
+pp3<-
+  plac.cut2 %>%
+    filter(lower_rob > -1000) %>%
+    ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
+    geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
+    theme_bw() + labs(x = "", y = "LATE")+
+    geom_hline(yintercept = 0, color = "black")+
+    geom_vline(xintercept = 0, color = "red")+
+    xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
+    coord_cartesian(ylim = c(-1000, 2000))+
+    ggtitle("2015 age-standardized Heart Disease Mortality")+
+  theme(axis.text.x = element_blank())
+
+plac.cut2b <- 
+purrr::map_df(.x = seq(-21, -.4, .1), 
+               .f = ~make_rdd_plot_data_placebo(outcome = data$crude_rate_2015h,
+                                               cutoff = .x))
+plac.cut2b$cutoff <- seq(-21,-.4,.1)
+
+pp4<-
+  plac.cut2b %>%
+    filter(lower_rob > -1000) %>%
+    ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
+    geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
+    theme_bw() + labs(x = "Placebo Cutoff Value (0 = True)", y = "LATE")+
+    geom_hline(yintercept = 0, color = "black")+
+    geom_vline(xintercept = 0, color = "red")+
+    xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
+    coord_cartesian(ylim = c(-1000, 2000))+
+    ggtitle("2015 Crude Heart Disease Mortality")
+  
+  
+pp3/pp4
+```
+
+```{r}
+plac.cut3 <- 
+purrr::map_df(.x = seq(-21, -.4, .1), 
+               .f = ~make_rdd_plot_data_placebo(outcome = data$age_adjusted_rate_2015c,
+                                               cutoff = .x))
+plac.cut3$cutoff <- seq(-21,-.4,.1)
+
+pp5<-
+  plac.cut3 %>%
+    filter(lower_rob > -1000) %>%
+    ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
+    geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
+    theme_bw() + labs(x = "", y = "LATE")+
+    geom_hline(yintercept = 0, color = "black")+
+    geom_vline(xintercept = 0, color = "red")+
+    xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
+    coord_cartesian(ylim = c(-700, 1000))+
+    ggtitle("2015 age-standardized Cancer Mortality")+
+    theme(axis.text.x = element_blank())
+  
+  
+plac.cut3b <- 
+purrr::map_df(.x = seq(-21, -.4, .1), 
+               .f = ~make_rdd_plot_data_placebo(outcome = data$crude_rate_2015c,
+                                               cutoff = .x))
+plac.cut3b$cutoff <- seq(-21,-.4,.1)
+
+pp6<-
+  plac.cut3b %>%
+    filter(lower_rob > -1000) %>%
+    ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
+    geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
+    theme_bw() + labs(x = "Placebo Cutoff Value (0 = true)", y = "LATE")+
+    geom_hline(yintercept = 0, color = "black")+
+    geom_vline(xintercept = 0, color = "red")+
+    xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
+    coord_cartesian(ylim = c(-700, 1000))+
+    ggtitle("2015 age-standardized Cancer Mortality")
+
+pp5/pp6
+```
+
+```{r, fig.cap='Treatment Probability by IMU Score. Dashed lines, from left to right, show scores of 55, 58, and 62 (the true cutoff)'}
+merge.mortb %>%
+  ggplot(aes(x = newimu14, y = treatment)) + geom_smooth() +# geom_jitter() +
+  geom_vline(xintercept = 58, linetype = "dashed") + geom_vline(xintercept = 55, linetype = "dashed") +
+  geom_vline(xintercept = 62, color = "red", linetype = "dashed")+
+  theme_bw() + labs(x = "2014 IMU Score", y = "Treatment Probability")
+
+rddapp::dc_test(`Transformed IMU Score 2014`, cutpoint = -6)
+rddapp::dc_test(`Transformed IMU Score 2014`, cutpoint = -8)
+
+```
 
