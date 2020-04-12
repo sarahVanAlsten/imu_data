@@ -1378,10 +1378,10 @@ ci.robu <- c(paste0(round(pov$ci[3,1],2), " - ", round(pov$ci[3,2],2)),
              paste0(round(obesi$ci[3,1],2), " - ", round(obesi$ci[3,2],2)),
              paste0(round(smoke$ci[3,1],2), " - ", round(smoke$ci[3,2],2)),
              paste0(round(inact$ci[3,1],2), " - ", round(inact$ci[3,2],2)),
-             paste0(round(white$ci[3,1],2), " - ", round(white$ci[3,2],2)),
+             paste0(round(white$ci[3,1],2), " - ", sprintf("%.2f",round(white$ci[3,2],2))),
              paste0(round(black$ci[3,1],2), " - ", round(black$ci[3,2],2)),
-             paste0(round(hisp$ci[3,1],2), " - ", round(hisp$ci[3,2],2)),
-             paste0(round(rura$ci[3,1],2), " - ", round(rura$ci[3,2],2)),
+             paste0(sprintf("%.3f",round(hisp$ci[3,1],2)), " - ", round(hisp$ci[3,2],2)),
+             paste0(sprintf("%.3f",round(rura$ci[3,1],2)), " - ", sprintf("%.3f",round(rura$ci[3,2],2))),
              paste0(round(nine$ci[3,1],2), " - ", round(nine$ci[3,2],2)),
              paste0(round(four$ci[3,1],2), " - ", round(four$ci[3,2],2)),
              paste0(round(five$ci[3,1],2), " - ", round(five$ci[3,2],2)),
@@ -1402,7 +1402,8 @@ names(res.tab) <- c("Outcome", "Estimate", "Robust")
 res.tab %>%
 #specify which ones should be bold
   mutate(
-     Robust = cell_spec(Robust, bold = ifelse(substr(Robust,1,1)!= "-", T, F))) %>%
+     Robust = cell_spec(Robust, bold = ifelse(substr(Robust,1,1)!= "-", T, F)),
+     Estimate = cell_spec(Estimate, bold = ifelse(substr(Robust,1,1)!= "-", T, F))) %>%
   kable("latex", booktabs = T, escape = F, align= c('l', 'r', 'r', 'r', 'r', 'r'),
         caption = "Placebo Effects of NHSC Participation") %>%
   kable_styling(row_label_position = "l",) %>%
