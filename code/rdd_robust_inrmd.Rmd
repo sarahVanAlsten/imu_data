@@ -1,14 +1,14 @@
 ---
 title: " Does the National Health Service Corps Help Underserved Areas?"
 author: "Sarah Van Alsten"
-output:
+output:   
   pdf_document: 
     latex_engine: lualatex
     includes:  
       in_header: myheader.tex
+
 indent: true
 ---
-\fontsize{12}{22}
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 
@@ -21,7 +21,7 @@ library(tableone)
 
 
 ## Background and Aims
-Medically underserved areas are communities with a high levels of unmet healthcare needs, often secondary to insufficient access to primary care physicians (Shi et al., 2005; Starfield, Shi, & Macinko, 2005). Formal designations of underserved areas began in the late 1980s and is based on the Index of Medical Underservice (IMU), a weighted score of census or county-level infant mortality rate, primary care provider to population ratio, percent of population older than 65, and percent of population below the federal poverty line (“Development of the index of medical underservice,” 1975). Although primary care recruitment to and subsequent health improvement in underserved areas are often cited targets for healthcare and physician workgroups, medically underserved areas are consistently faced with physician shortages. Determinants of shortages include lack of physician exposure to rural health in medical school, individual preference to work in urban centers, lower pay for primary care specialties, and hospital closures (Fagan et al., 2015; Parlier, Galvin, Thach, Kruidenier, & Fagan, 2018; Rabinowitz, Diamond, Markham, & Paynter, 2001).
+Medically underserved areas are communities with a high levels of unmet healthcare needs, often secondary to insufficient access to primary care physicians (Shi et al., 2005; Starfield, Shi, & Macinko, 2005). Formal designation of underserved areas began in the late 1980s and is based on the Index of Medical Underservice (IMU), a weighted score of census or county-level infant mortality rate, primary care provider to population ratio, percent of population older than 65, and percent of population below the federal poverty line. Although primary care recruitment to and subsequent health improvement in underserved areas are often cited targets for healthcare and physician workgroups, medically underserved areas are consistently faced with physician shortages. Determinants of shortages include lack of physician exposure to rural health in medical school, individual preference to work in urban centers, lower pay for primary care specialties, and hospital closures (Fagan et al., 2015; Parlier, Galvin, Thach, Kruidenier, & Fagan, 2018; Rabinowitz, Diamond, Markham, & Paynter, 2001).
   
 To increase physician supply to underserved areas, several loan repayment and subsidized training programs for primary care practitioners have been instituted, including the National Health Service Corps (NHSC) through the U.S. Department of Health and Human Services (National Health Service Corps Scholarship Program, 2003). The NHSC grants primary care physicians up to \$50,000 in medical school loan forgiveness in exchange for two years of service in a medically underserved area, although select states offer additional compensation. Early assessments of the NHSC have shown the program to be successful in recruiting physicians to areas of high need (Holmes, 2005); unfortunately, less than half of participating physicians remain in their initial area of service after completion of the program, leading to high rates of turnover and lack of continuity in the care of underserved community members (Heisler, 2017; Pathman, Konrad, Dann, & Koch, 2004). Further, despite the purported goal of primary care recruitment programs in improving population health, few evaluations have explored the effects of the NHSC on population health indicators. 
 
@@ -34,7 +34,7 @@ Health and Human Services, 2014) for the ratio of primary care physicians-to-pop
 
 *Index of Medical Underservice Scoring*
 
-  A county’s eligibility to participate in the NHSC is determined by the index of medical underservice score, which quantifies an area’s degree of physician shortage relative to healthcare needs. Scores are typically generated automatically by the Health Resource and Service Administration from Area Health Resource Files, CDC WONDER, and Census data, with all scores of 62 or below eligible for NHSC participation. Although historic data on county eligibility are publicly available, actual index of medical underservice scores are only provided for counties currently eligible for the NHSC (i.e. in 2019; 2020 eligibility has not yet been determined). Thus, to obtain index of medical underservice scores for earlier years, I regenerate scores for each county in the U.S. using historic data and the Health Resource and Service Administration scoring guidelines (U.S. Department of Health and Human Services, 2015). Scores are calculated as the weighted sum of a county’s primary care physician-to-population ratio, percentage of residents age 65 or older, percentage of population at or below the federal poverty level, and infant mortality rate or, in instances where infant mortality rates were suppressed due to small sample sizes, rates of low birthweight. All score subcomponents are based on five-year averages to prevent substantial annual variation in program eligibility for treated counties (i.e. the averages of 2009-2014 components were used to calculate 2014 scores), and counties with qualifying scores automatically retain eligibility for two years following designation, regardless of subsequent scores.^[Although most of these components are not based on census-level data, it is not clear if or how the Department of Health and Human Services incorporates sampling error into score components. For generated scores, I use the point estimate in main analyses and perform additional sensitivity analyses (available in the supplement) testing the robustness of findings using a range of possible scores given sampling error for each component.] Though the NHSC has been in operation since the late 1980s, the current index of medical underservice scoring criteria were first implemented in 2014 such that all potential carry-overs from 2012/2013 to 2014 were disallowed. Thus, unlike for earlier periods, a county’s NHSC participation in 2014 is based strictly on its 2014 score rather than any one of its 2012, 2013, or 2014 scores. Table 1 provides a more detailed description of scoring criteria and weighting procedures.  $\newline$
+  A county’s eligibility to participate in the NHSC is determined by the index of medical underservice score, which quantifies an area’s degree of physician shortage relative to healthcare needs. Scores are typically generated automatically by the Health Resource and Service Administration from Area Health Resource Files, CDC WONDER, and Census data, with all scores of 62 or below eligible for NHSC participation. Although historic data on county eligibility are publicly available, actual index of medical underservice scores are only provided for counties currently eligible for the NHSC (i.e. in 2019; 2020 eligibility has not yet been determined). Thus, to obtain index of medical underservice scores for earlier years, I regenerate scores for each county in the U.S. using historic data and the Health Resource and Service Administration scoring guidelines (U.S. Department of Health and Human Services, 2015). Scores are calculated as the weighted sum of a county’s primary care physician-to-population ratio, percentage of residents age 65 or older, percentage of population at or below the federal poverty level, and infant mortality rate or, in instances where infant mortality rates were suppressed due to small sample sizes, rates of low birthweight. All score subcomponents are based on five-year averages to prevent substantial annual variation in program eligibility for treated counties (i.e. the averages of 2009-2014 components were used to calculate 2014 scores), and counties with qualifying scores automatically retain eligibility for two years following designation, regardless of subsequent scores.^[Although most of these components are not based on census-level data, it is not clear if or how the Department of Health and Human Services incorporates sampling error into score components. Thus, for generated scores, I use the point estimate in all analyses.] Though the NHSC has been in operation since the late 1980s, the current index of medical underservice scoring criteria were first implemented in 2014 such that all potential carry-overs from 2012/2013 to 2014 were disallowed. Thus, unlike for earlier periods, a county’s NHSC participation in 2014 is based strictly on its 2014 score rather than any one of its 2012, 2013, or 2014 scores. Table 1 provides a more detailed description of scoring criteria and weighting procedures.  $\newline$
 
 *Treatment Assignment and Identification*
 
@@ -108,12 +108,19 @@ The of placebo fuzzy regression discontinuities assessing covariate balance and 
 However, the local effects of 2014 NHSC participation on pretreatment mortality rates were significant in several instances, namely, for 1999 age-standardized all cause mortality ($\tau$ = 119.04, RBC 95% CI = 5.29 - 232.8) and 2009 age-standardized cancer mortality rate ($\tau$ = 89.28, 95% CI = 10.23 - 85.08). There are two possible explanations for this result. One, despite the change to eligbility criteria in 2014, some counties may have participated in the NHSC prior to 2014, meaning that pretreatment "effects" are a byproduct of past eligibility. This is likely more applicable to 2009 than 1999 mortality, given serial correlation of both mortality rate and eligibility determinants. Two, there may be reverse causality such that counties with higher historica mortality are preferentially chosen by the Department of Health and Human Services or by physicians themselves to receive funding.$\newline$
 
 *Placebo Cutoffs*
+
 Using the sample of counties below the cutoff, there was consistently no local regression discontinuity effect on age-standardized or crude all cause mortality when setting placebo thresholds at IMU scores 10 to 20 points below the true threshold (i.e. for IMU scores of 42 - 52; Figure 9). With the exception of a placebo threshold 6 points below the true threshold, at which the estimated $\tau$ was larger than the 'true' RD effect (excess of 497 deaths versus 161 per 10,000 person-years) and significant, placebo thresholds closer to the true cutoff also showed null effects but were larger in magnitude and less stable than those observed further from the true threshold. At no placebo cutoff were estimated effects for crude heart disease mortality significant (Figure 10, bottom), but signifcant effects were observed at placebo cutoffs 17 and 6.8 points below the true threshold (Figure 10, top). As for all cause mortality, these estimated effects were substantially larger than the true discontinuity effect, indicating an excess of 166 and 302 versus 55 deaths from heart disease per 10,000 person-years, respectively. As depicted in Figure 11, placebo thresholds for both age-standardized and crude cancer mortality yielded similar null effects, again with the exception of a placebo threshold 5 points below the true cutoff for age-standardized rates ($\tau$ = 120.88) and 4.3 points below the threshold for crude rates ($\tau$ = 1026.53). 
 
-Given the relative consistency of identifying an effect at false cutoff scores in the range of 55 - 58 (4 to 7 points below an IMU score of 62), I performed additional exploration of treatement probability at various IMU scores (Figure 12). The anticipated probabilty of receiving an NHSC physician is approximatley equal for counties with IMU scores between 52 and 58, after which probability begins to drop, reaching zero [as expected] for scores greater than 62. Whether this implies that
+Given the relative consistency of identifying an effect at false cutoff scores in the range of 55 - 58 (4 to 7 points below an IMU score of 62), I performed additional exploration of treatement probability at various IMU scores (Figure 12). The anticipated probabilty of receiving an NHSC physician is approximatley equal for counties with IMU scores between 52 and 58, after which probability begins to drop, reaching zero [as expected] for scores greater than 62. There is no evidence of preferential sorting around these thresholds, and the only locally imbalanced covariate was percent of elderly residents (Table 6 in supplement). Thus, it is possible that the significant effects at these placebo thresholds are driven by imbalance in age. Alternatively, this may imply an implict threshold, perhaps due to administrative preference for specific counties, remains an area for future investigation. 
+$\newline$
 
-*Limitations*
-Nonetheless, there were a number of limitations which may have impacted results, the most prominent being a lack of data on IMU scores themselves. Identification in regression discontinuity is dependent upon *a priori* knowledge of treatment assignment according to, as well as consistent measurement of, the running variable. Though the data sources and scoring mechanism I used to regenerate the IMU are purportedly the same as those employed by the Department of Health and Human Services in designating underserved areas and all counties simulated as ineligible were in fact ineligible it is probable that measurement error occurred.^[Apparently, a lack of published IMU scores has posed a barrier to researchers other than the author. In early fall of 2019, a Freedom Of Information Act request was posed to the Department of Health and Human Services (DHHS) to release historic scores, to which DHHS has yet to respond.] Second, the estimand may have limited external validity. I exploit the change in eligibility ruling in 2014 for identification, but it possible that cumulative effects of the program may be more beneficial than those from its early implementation. For instance, new rulings are often accompanied by administrative difficulties and consume additional time and resources which may have negatively affected program implementation. The estimand also refers only to counties near the cutoff which actually receive a physician, which may be of less interest to counties that are more highly underserved.^[If the effect had indicated benefit, one might argue that the benefit applies only to compliers, so there would be a question of net positive. Such an argument doesn't necessarily apply in this case, where substantial harm may be done.]
+*Conclusion and Limitations*
+
+At best, results indicated no effect of participation in the NHSC on county-level mortality; at worst, participation in the NHSC may lead to increased mortality for counties with scores near the cutoff. Nonetheless, a number of potential threats to identification were present in the data, including associations with pretreatment outcomes and significant effects at points along the running variable other than the true cutpoint. I did not find threats to the exclusion restriction in the potential confounding covariates included, but there remains the possibility that other unmeasured variables violated this assumption. The estimand may also have limited generalizable- for instance, I exploit the anamoly in 2014 scoring in order to identify the treatment effect, but it may be that this same anamoly makes 2014 qualitatively different from treatment in other years. For instance, changes in administrative rules necessarily require additional time and investment, perhpas detracting from other program components in ways that adversely affect health. Moreover, the estimand is applicable only to counties near the cutoff, so highly underserved areas with the greatest need likely experience different effects.
+
+Additionally, a number of limitations present in the data may have lead to bias and/or measurement error, the most prominent of which was the fact that scores did not come from the NHSC administering body itself. Still, I will note that scores were generated using the same data sources and criteria used by the Department of Health and Human Services, and that generated scores paralleled prior knowledge of participation and eligbility.
+
+
 
 ```{r, echo = F, results='asis', warning = FALSE, message=FALSE}
 #make a table one to show weighted scoring criteria
@@ -430,6 +437,12 @@ tab2 %>%
 
 ```
 
+```{r, fig.cap='McCrary Density Test shows no evidence of sorting at the cutoff (p = 0.68)', results='hide', fig.pos = 'H'}
+`Transformed IMU Score 2014`<- merge.mortb$imu14 -62
+rddapp::dc_test(`Transformed IMU Score 2014`, 0, bw = 10.11)
+
+```
+
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, results='hide'}
 library(AER)
@@ -741,11 +754,7 @@ res.tab %>%
 
 ```
 
-```{r, fig.cap='McCrary Density Test shows no evidence of sorting at the cutoff (p = 0.68)', results='hide', fig.pos = 'h'}
-`Transformed IMU Score 2014`<- merge.mortb$imu14 -62
-rddapp::dc_test(`Transformed IMU Score 2014`, 0, bw = 10.11)
 
-```
 
 ```{r}
 #figure showing sensitivity to bw choice
@@ -1383,8 +1392,8 @@ ci.robu <- c(paste0(round(pov$ci[3,1],2), " - ", round(pov$ci[3,2],2)),
              paste0(round(inact$ci[3,1],2), " - ", round(inact$ci[3,2],2)),
              paste0(round(white$ci[3,1],2), " - ", sprintf("%.2f",round(white$ci[3,2],2))),
              paste0(round(black$ci[3,1],2), " - ", round(black$ci[3,2],2)),
-             paste0(sprintf("%.3f",round(hisp$ci[3,1],2)), " - ", round(hisp$ci[3,2],2)),
-             paste0(sprintf("%.3f",round(rura$ci[3,1],2)), " - ", sprintf("%.3f",round(rura$ci[3,2],2))),
+             paste0(sprintf("%.2f",round(hisp$ci[3,1],2)), " - ", round(hisp$ci[3,2],2)),
+             paste0(sprintf("%.2f",round(rura$ci[3,1],2)), " - ", sprintf("%.2f",round(rura$ci[3,2],2))),
              paste0(round(nine$ci[3,1],2), " - ", round(nine$ci[3,2],2)),
              paste0(round(four$ci[3,1],2), " - ", round(four$ci[3,2],2)),
              paste0(round(five$ci[3,1],2), " - ", round(five$ci[3,2],2)),
@@ -1400,25 +1409,22 @@ ci.robu <- c(paste0(round(pov$ci[3,1],2), " - ", round(pov$ci[3,2],2)),
 res.tab <- cbind.data.frame(outcome, tau.rdd, ci.robu)
 res.tab$tau.rdd <- round(res.tab$tau.rdd, 2)
 
-names(res.tab) <- c("Outcome", "Estimate", "Robust")
+
+names(res.tab) <- c("Outcome", "Estimate", "Robust CI")
 
 res.tab %>%
 #specify which ones should be bold
   mutate(
-     Robust = cell_spec(Robust, bold = ifelse(substr(Robust,1,1)!= "-", T, F)),
-     Estimate = cell_spec(Estimate, bold = ifelse(substr(Robust,1,1)!= "-", T, F))) %>%
+     `Robust CI` = cell_spec(`Robust CI`, bold = ifelse(substr(`Robust CI`,1,1)!= "-", T, F)),
+     Estimate = cell_spec(Estimate, bold = ifelse(substr(`Robust CI`,1,1)!= "-", T, F))) %>%
   kable("latex", booktabs = T, escape = F, align= c('l', 'r', 'r', 'r', 'r', 'r'),
-        caption = "Placebo Effects of NHSC Participation") %>%
+        caption = "Placebo Effects of NHSC Participation At False Cutoff Score of 56") %>%
   kable_styling(row_label_position = "l",) %>%
   footnote(general = "Estimates represent tau FRD using a local regression with a triangular kernel")%>%
-  add_footnote(label = "Bold face denotes statistical significance (p < 0.05)") %>%
+  add_footnote(label = "Bold face denotes statistical significance (p < 0.05), CI refers to 95% Confidence Interval")  %>%
   add_footnote(label = "All mortality rates are age-standardized")
 
 ```
-
-
-### Placebo Tests: Using Alternate Cutoffs
-Here, the reader may note that I have not included placebo cutoffs above the actual cutoff. The reason being is that it is generally suggested to restrict the sample for placebo cutoffs to only observations above or below the true cutoff in order to not impose constraints at the actual value of the cutoff into the local regression. Restricting to only observations above the sample leaves no possibility for instrumentation, as 0 counties above the cutoff were eligible for the program.
 
 ```{r, fig.cap="LATE at placebo cutoffs. Ribbon Shows RBC 95% Confidence Interval"}
 make_rdd_plot_data_placebo <- function(outcome, cut = data$x_tilde, cutoff){
@@ -1589,9 +1595,150 @@ merge.mortb %>%
   geom_vline(xintercept = 58, linetype = "dashed") + geom_vline(xintercept = 55, linetype = "dashed") +
   geom_vline(xintercept = 62, color = "red", linetype = "dashed")+
   theme_bw() + labs(x = "2014 IMU Score", y = "Treatment Probability")
+```
 
-rddapp::dc_test(`Transformed IMU Score 2014`, cutpoint = -6)
-rddapp::dc_test(`Transformed IMU Score 2014`, cutpoint = -8)
+
+```{r}
+pov <- rdrobust(y = data$pv_14, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+old <- rdrobust(y = data$percent_65_and_older_raw_value_14, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+hhinc <- rdrobust(y = data$median_household_income_raw_value_14, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+unemp <- rdrobust(y = data$unemployment_rate_2014, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+hsgrad <- rdrobust(y = data$high_school_graduation_raw_value_14, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+unins <- rdrobust(y = data$uninsured_2014, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+obesi <- rdrobust(y = data$adult_obesity_2012_2014, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+smoke <- rdrobust(y = data$adult_smoking_value, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+inact <- rdrobust(y = data$physical_inactivity_2012_2014, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+white <- rdrobust(y = data$percent_non_hispanic_white_raw_value_14, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+black <- rdrobust(y = data$percent_non_hispanic_african_american_raw_value_14, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+hisp <- rdrobust(y = data$percent_hispanic_raw_value_14, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+rura <- rdrobust(y = data$percent_rural_raw_value_14, 
+              x = data$x_tilde, fuzzy = data$treatment,
+              c = -6, all=TRUE , masspoints = F, p = 2)
+
+
+#create a nice table of results
+outcome <- c("Percent Poverty", "Percent Over 65",
+             "Median HH Income", "Unemployment", "High School Graduation",
+             "Uninsured", "Adult Obesity", "Smoking", "Physical Inactivity",
+             "Percent White", "Percent Black", "Percent Hispanic", "Percent Rural")
+
+tau.rdd <- c(pov$Estimate[2],old$Estimate[2]
+             ,hhinc$Estimate[2], unemp$Estimate[2], hsgrad$Estimate[2],
+             unins$Estimate[2], obesi$Estimate[2], smoke$Estimate[2],
+             inact$Estimate[2], white$Estimate[2], black$Estimate[2],
+             hisp$Estimate[2], rura$Estimate[2])
+
+ci.robu <- c(paste0(round(pov$ci[3,1],2), " - ", round(pov$ci[3,2],2)),
+             paste0(round(old$ci[3,1],2), " - ", round(old$ci[3,2],2)),
+             paste0(round(hhinc$ci[3,1],2), " - ", round(hhinc$ci[3,2],2)),
+             paste0(round(unemp$ci[3,1],2), " - ", round(unemp$ci[3,2],2)),
+             paste0(round(hsgrad$ci[3,1],2), " - ", round(hsgrad$ci[3,2],2)),
+             paste0(round(unins$ci[3,1],2), " - ", round(unins$ci[3,2],2)),
+             paste0(round(obesi$ci[3,1],2), " - ", round(obesi$ci[3,2],2)),
+             paste0(round(smoke$ci[3,1],2), " - ", round(smoke$ci[3,2],2)),
+             paste0(round(inact$ci[3,1],2), " - ", round(inact$ci[3,2],2)),
+             paste0(round(white$ci[3,1],2), " - ", sprintf("%.2f",round(white$ci[3,2],2))),
+             paste0(round(black$ci[3,1],2), " - ", round(black$ci[3,2],2)),
+             paste0(sprintf("%.2f",round(hisp$ci[3,1],2)), " - ", round(hisp$ci[3,2],2)),
+             paste0(sprintf("%.2f",round(rura$ci[3,1],2)), " - ", sprintf("%.2f",round(rura$ci[3,2],2)))
+             )
+
+#bind together for table
+res.tab <- cbind.data.frame(outcome, tau.rdd, ci.robu)
+res.tab$tau.rdd <- round(res.tab$tau.rdd, 2)
+
+names(res.tab) <- c("Outcome", "Estimate", "Robust CI")
+
+res.tab %>%
+#specify which ones should be bold
+  mutate(
+     `Robust CI` = cell_spec(`Robust CI`, bold = ifelse(substr(`Robust CI`,1,1)!= "-", T, F)),
+     Estimate = cell_spec(Estimate, bold = ifelse(substr(`Robust CI`,1,1)!= "-", T, F))) %>%
+  kable("latex", booktabs = T, escape = F, align= c('l', 'r', 'r', 'r', 'r', 'r'),
+        caption = "Placebo Effects of NHSC Participation At False Cutoff Score of 56") %>%
+  kable_styling(row_label_position = "l",) %>%
+  footnote(general = "Estimates represent tau FRD using a local regression with a triangular kernel")%>%
+  add_footnote(label = "Bold face denotes statistical significance (p < 0.05), CI refers to 95% Confidence Interval") 
 
 ```
 
+
+
+
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+$\newline$
+## References
+
+
+Anderson, R. N., & Rosenberg, H. M. (1998). Age standardization of death rates: Implementation of the year 2000 standard. *National Vital Statistics Reports, 47*(3).
+
+Calonico, S., Cattaneo, M. D., & Farrell, M. H. (2019). Optimal bandwidth choice for robust bias-corrected inference in regression discontinuity designs. *The Econometrics Journal*, *00*, 1–19. doi: 10.1093/ectj/utz022
+
+Centers for Disease Control and Prevention. (1995). *CDC Wonder*. Retrieved from http://wonder.cdc.gov/
+
+Fagan, E. B., Gibbons, C., Finnegan, S. C., Petterson, S., Peterson, L. E., Phillips Jr, R. L., & Bazemore, A. W. (2015). Family Medicine Graduate Proximity to Their Site of Training. *Family Medicine, 47*(2), 124–130.
+
+Heisler, E. (2017). *The National Health Service Corps* (No. CRS Report R44970). Washington, DC: Congressional Research Service.
+
+Holmes, G. M. (2005). Increasing physician supply in medically underserved areas. *Labour Economics*, 12(5), 697–725. doi: 10.1016/j.labeco.2004.02.003
+
+McCrary, J. (2008). Manipulation of the running variable in the regression discontinuity design: A density test. *Journal of Econometrics*, *142*(2), 698–714.
+
+National Health Service Corps Scholarship Program. , 42 U.S.C. § 2541 (2003).
+
+Parlier, A. B., Galvin, S. L., Thach, S., Kruidenier, D., & Fagan, E. B. (2018). The Road to Rural Primary Care: A Narrative Review of Factors That Help Develop, Recruit, and Retain Rural Primary Care Physicians. *Academic Medicine, 93*(1), 130–140. doi: 10.1097/ACM.0000000000001839
+
+Pathman, D. E., Konrad, T. R., Dann, R., & Koch, G. (2004). Retention of Primary Care Physicians in Rural Health Professional Shortage Areas. *American Journal of Public Health, 94*(10), 1723–1729. doi: 10.2105/AJPH.94.10.1723
+
+Rabinowitz, H. K., Diamond, J. J., Markham, F. W., & Paynter, N. P. (2001). Critical Factors for Designing Programs to Increase the Supply and Retention of Rural Primary Care Physicians. *JAMA, 286*(9), 1041–1048. doi: 10.1001/jama.286.9.1041
+
+Shi, L., Macinko, J., Starfield, B., Politzer, R., Wulu, J., & Xu, J. (2005). Primary Care, Social Inequalities, and All-Cause, Heart Disease, and Cancer Mortality in US Counties, 1990. *American Journal of Public Health, 95*(4), 674–680. doi: 10.2105/AJPH.2003.031716
+
+Starfield, B., Shi, L., & Macinko, J. (2005). Contribution of Primary Care to Health Systems and Health. *The Milbank Quarterly, 83*(3), 457–502. doi: 10.1111/j.1468-0009.2005.00409.x
+
+Torrieri, N. (2014). American Community Survey Design and Methodology (January 2014). Available online at: http://Www.census.gov/Acs/Www/Downloads/Survey_methodology/Acs_design_methodology_report_2014.pdf.
+
+U.S. Census Bureau; American Community Survey. (2014). 2014 American Community Survey 1-Year Estimates, Table S0103; generated by Sarah Van Alsten; using American FactFinder; Retrieved from http://factfinder.census.gov
+
+US Department of Health and Human Services. (2014a). Centers for Disease Control and Prevention (CDC) Behavioral Risk Factor Surveillance System Survey Questionnaire. Atlanta: CDC.
+
+US Department of Health and Human Services. (2014b). Health Resources and Services Administration. Area Health Resources Files (AHRF).
+
+U.S. Department of Health and Human Services. (2015, November). Shortage Designation Management System (SDMS): *Manual for Policies and Procedures*. Retrieved from http://contentmanager.med.uvm.edu/docs/sdms_manual_/ahec-documents/sdms_manual_.pdf?sfvrsn=10
