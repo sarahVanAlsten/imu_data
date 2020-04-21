@@ -1,6 +1,7 @@
 ---
 title: " Does the National Health Service Corps Help Underserved Areas?"
 author: "Sarah Van Alsten"
+date: "`r Sys.Date()`"
 output:   
   pdf_document: 
     latex_engine: lualatex
@@ -23,16 +24,16 @@ Medically underserved areas are communities with high levels of unmet healthcare
   
 To increase physician supply to underserved areas, several loan repayment and subsidized training programs for primary care practitioners have been instituted, including the National Health Service Corps (NHSC) through the U.S. Department of Health and Human Services (National Health Service Corps Scholarship Program, 2003). The NHSC grants primary care physicians up to \$50,000 in medical school loan forgiveness in exchange for two years of service in a medically underserved area, although select states offer additional compensation. Early assessments of the NHSC have shown the program to be successful in recruiting physicians to areas of high need (Holmes, 2005); unfortunately, less than half of participating physicians remain in their initial area of service after completion of the program, leading to high rates of turnover and lack of continuity in the care of underserved community members (Heisler, 2017; Pathman, Konrad, Dann, & Koch, 2004). Further, despite the purported goal of primary care recruitment programs in improving population health, few evaluations have explored the effects of the NHSC on population health indicators. 
 
-The aim of this analysis is to determine whether participation in the NHSC reduces county-level all-cause and disease-specific mortality (herein, simply mortality). I use a fuzzy regression discontinuity design to answer this question. $\newline$
+The aim of this analysis is to determine whether participation in the NHSC reduces county-level all-cause and disease-specific mortality (herein, simply mortality). I use a fuzzy regression discontinuity design to answer this question.
 
 ## Method
 
 Data for this study come from three sources: one, the Area Health Resource Files (US Department of
-Health and Human Services, 2014) for the ratio of primary care physicians-to-population; two, the American Community Survey (ACS) (U.S. Census Bureau; American Community Survey, 2014) for population estimates, age demographics, and poverty and unemployment rates; three, the Centers for Disease Control Wide-ranging Online Data for Epidemiologic Research (CDC WONDER) (Centers for Disease Control and Prevention, 1995) for infant mortality rates, low birthweight rates, and crude all-cause, cancer, and heart disease mortality rates. Briefly, the Area Health Resource Files are a compilation of 50 separate health service and economic datasets provided by the American Medical Association, American Hospital Association, and Bureau of Health Workforce. Files are updated annually to monitor health service worker supply, regional demand for specific medical procedures (e.g. elective surgery, orthodontia), and costs of care. Among the provided indicators is a census of all physicians licensed in the U.S., disaggregated by county of practice and medical specialty. The ACS is an ongoing, nationally representative, multistage probability sample conducted by the U.S. Census Bureau as a supplement to the decennial census. Roughly 0.6% of the U.S. population is sampled for the ACS in any given year, and, because the Census Bureau contacts respondents multiple time to encourage participation, the response rate in 2014 was 96.7% (Torrieri, 2014). The ACS includes census tract-level demographics including estimates of population by age group and race/ethnicity, poverty, unemployment, and educational attainment. Finally, CDC WONDER is an online query system maintained by the National Center for Health Statistics that allows users to generate area and period-level natality and mortality data from linkage to birth records and the National Death Index (> 90% of all deaths are accounted for in any given year) for all U.S. counties between 1999 and 2016. Area-level mortality rates disaggregated by age are provided for the 57 leading causes of death (as determined by ICD-10 codes listed on death certificates); rates are suppressed for regions with fewer than 10 deaths from a specific cause.  $\newline$
+Health and Human Services, 2014) for the ratio of primary care physicians-to-population; two, the American Community Survey (ACS) (U.S. Census Bureau; American Community Survey, 2014) for population estimates, age demographics, and poverty and unemployment rates; three, the Centers for Disease Control Wide-ranging Online Data for Epidemiologic Research (CDC WONDER) (Centers for Disease Control and Prevention, 1995) for infant mortality rates, low birthweight rates, and crude all-cause, cancer, and heart disease mortality rates. Briefly, the Area Health Resource Files are a compilation of 50 separate health service and economic datasets provided by the American Medical Association, American Hospital Association, and Bureau of Health Workforce. Files are updated annually to monitor health service worker supply, regional demand for specific medical procedures (e.g. elective surgery, orthodontia), and costs of care. Among the provided indicators is a census of all physicians licensed in the U.S., disaggregated by county of practice and medical specialty. The ACS is an ongoing, nationally representative, multistage probability sample conducted by the U.S. Census Bureau as a supplement to the decennial census. Roughly 0.6% of the U.S. population is sampled for the ACS in any given year, and, because the Census Bureau contacts respondents multiple time to encourage participation, the response rate in 2014 was 96.7% (Torrieri, 2014). The ACS includes census tract-level demographics including estimates of population by age group and race/ethnicity, poverty, unemployment, and educational attainment. Finally, CDC WONDER is an online query system maintained by the National Center for Health Statistics that allows users to generate area and period-level natality and mortality data from linkage to birth records and the National Death Index (> 90% of all deaths are accounted for in any given year) for all U.S. counties between 1999 and 2016. Area-level mortality rates disaggregated by age are provided for the 57 leading causes of death (as determined by ICD-10 codes listed on death certificates); rates are suppressed for regions with fewer than 10 deaths from a specific cause.
 
 *Index of Medical Underservice Scoring*
 
-A county’s eligibility to participate in the NHSC is determined by the index of medical underservice score, which quantifies an area’s degree of physician shortage relative to healthcare needs. Scores are typically generated automatically by the Health Resource and Service Administration from Area Health Resource Files, CDC WONDER, and Census data, with all scores of 62 or below eligible for NHSC participation. Although historic data on county eligibility are publicly available, actual index of medical underservice scores are only provided for counties currently eligible for the NHSC (i.e. in 2019; 2020 eligibility has not yet been determined). Thus, to obtain index of medical underservice scores for earlier years, I regenerate scores for each county in the U.S. using historic data and the Health Resource and Service Administration scoring guidelines (U.S. Department of Health and Human Services, 2015). Scores are calculated as the weighted sum of a county’s primary care physician-to-population ratio, percentage of residents age 65 or older, percentage of population at or below the federal poverty level, and infant mortality rate or, in instances where infant mortality rates were suppressed due to small sample sizes, rates of low birthweight. All score subcomponents are based on five-year averages to prevent substantial annual variation in program eligibility for treated counties (i.e. the averages of 2009-2014 components were used to calculate 2014 scores), and counties with qualifying scores automatically retain eligibility for two years following designation, regardless of subsequent scores.^[Although most of these components are not based on census-level data, it is not clear if or how the Department of Health and Human Services incorporates sampling error into score components. I therefore use the point estimate for all analyses] Though the NHSC has been in operation since the late 1980s, the current index of medical underservice scoring criteria were first implemented in 2014 such that all potential carry-overs from 2012/2013 to 2014 were disallowed. Thus, unlike for earlier periods, a county’s NHSC participation in 2014 is based strictly on its 2014 score rather than any one of its 2012, 2013, or 2014 scores. A more detailed description of scoring criteria and weighting procedures is provided in the appendix.  $\newline$
+A county’s eligibility to participate in the NHSC is determined by the index of medical underservice score, which quantifies an area’s degree of physician shortage relative to healthcare needs. Scores are typically generated automatically by the Health Resource and Service Administration from Area Health Resource Files, CDC WONDER, and Census data, with all scores of 62 or below eligible for NHSC participation. Although historic data on county eligibility are publicly available, actual index of medical underservice scores are only provided for counties currently eligible for the NHSC (i.e. in 2019; 2020 eligibility has not yet been determined). Thus, to obtain index of medical underservice scores for earlier years, I regenerate scores for each county in the U.S. using historic data and the Health Resource and Service Administration scoring guidelines (U.S. Department of Health and Human Services, 2015). Scores are calculated as the weighted sum of a county’s primary care physician-to-population ratio, percentage of residents age 65 or older, percentage of population at or below the federal poverty level, and infant mortality rate or, in instances where infant mortality rates were suppressed due to small sample sizes, rates of low birthweight. All score subcomponents are based on five-year averages to prevent substantial annual variation in program eligibility for treated counties (i.e. the averages of 2009-2014 components were used to calculate 2014 scores), and counties with qualifying scores automatically retain eligibility for two years following designation, regardless of subsequent scores.^[Although most of these components are not based on census-level data, it is not clear if or how the Department of Health and Human Services incorporates sampling error into score components. I therefore use the point estimate for all analyses] Though the NHSC has been in operation since the late 1980s, the current index of medical underservice scoring criteria were first implemented in 2014 such that all potential carry-overs from 2012/2013 to 2014 were disallowed. Thus, unlike for earlier periods, a county’s NHSC participation in 2014 is based strictly on its 2014 score rather than any one of its 2012, 2013, or 2014 scores. A more detailed description of scoring criteria and weighting procedures is provided in the appendix.
 
 *Treatment Assignment and Identification*
 
@@ -54,7 +55,7 @@ $$
 
   Because of this feature, monotonicity is guaranteed to hold, with the exception that state governors may grant exemptions for ineligible rural counties with demonstrated primary care shortages to receive funding for rural health clinics. However, the application process for exemption is long and requires extensive administrative oversight, with few requests ultimately being approved, so the population of defiers is both known and small (a total of five counties were exempted in 2014, all of which I exclude from further analyses). As shown in Table 2, derived treatment assignment according to simulated scores adhered to known participation and eligibility rules, with zero counties above the cutoff participating and approximately one-half of those below participating. 
   
-  In addition to monotonicity, the ability to identify the RDD effect as the local average treatment effect for the subpopulation of compliers (i.e. counties which are not perpetually enrolled- or never enrolled- in the program) which have IMU scores near the cutoff hinges upon several additional assumptions, namely, continuity in potential outcomes and potential treatment near the threshold, the relevance of $Z$, and the exclusion restriction. While it is not necessarily possible to assess continuity in potential outcomes, I assess balance in covariates for counties just above and below the cutpoint and, to assess potential manipulation of the running variable $X_i$, I check for discontinuity in the density of observations just above and below the cutoff score (McCrary, 2008). I evaluate the relevance of $Z$ using weak instrument tests. Finally, in regards to the exclusion restriction, eligiblity itself should not be linked to mortality other than through actual program participation, as NHSC funding cannot be used for other healthcare needs and does not impact eligibility for other population health programs. It is also expected that eligibility would not influence mortality through economic progress - at most, one to two physicians per county are recruited, which should neither appreciably increase county population nor substantially stimulate local economic conditions.
+In addition to monotonicity, the ability to identify the RDD effect as the local average treatment effect for the subpopulation of compliers (i.e. counties which are not perpetually enrolled- or never enrolled- in the program) which have IMU scores near the cutoff hinges upon several additional assumptions, namely, continuity in potential outcomes and potential treatment near the threshold, the relevance of $Z$, and the exclusion restriction. While it is not necessarily possible to assess continuity in potential outcomes, I assess balance in covariates for counties just above and below the cutpoint and, to assess potential manipulation of the running variable $X_i$, I check for discontinuity in the density of observations just above and below the cutoff score (McCrary, 2008). I evaluate the relevance of $Z$ using weak instrument tests. Finally, in regards to the exclusion restriction, eligiblity itself should not be linked to mortality other than through actual program participation, as NHSC funding cannot be used for other healthcare needs and does not impact eligibility for other population health programs. It is also expected that eligibility would not influence mortality through economic progress - at most, one to two physicians per county are recruited, which should neither appreciably increase county population nor substantially stimulate local economic conditions.
   
 Of greater threat to exogeneity are the IMU score components themselves, in particular poverty and age (infant mortality is excluded from other mortality estimates, while physician supply is the direct target of the program and is less apt to influence health other than through actual patient care; see DAG in appendix). If counties just above and below the cutoff are balanced on these components, the capacity for identification improves; therefore, I test this explicitly in sensitivity analyses. However, population age distributions varied widely both between and within eligible and ineligible counties and, as the association between age and mortality is generally nonlinear and discontinuous (e.g. 64 year olds have dramatically higher risk of death than do 18 year olds), these differences may lead to a violation of the exclusion restriction even with balance on raw percentages of elderly residents. To accomodate for this possibility, I used cause-specific crude rates and county-level population estimates for each 10-year age stratum to standardize cause-specific rates to the 2000 U.S. standard million (Anderson & Rosenberg, 1998), creating an additional outcome measure that was comparable across counties with different age distributions. 
 
@@ -118,8 +119,6 @@ rddapp::dc_test(`Transformed IMU Score 2014`, 0, bw = 10.11)
 ```
 
 
-$\newline$
-
 *Model Specification and Estimation*
 
 To recover the regression discontinuity effect $\tau$ of county NHSC participation $D_i$ on 2015 mortality rate $Y_i$, I use a fuzzy regression discontinuity design and estimate $\tau$ with a two-stage least squares approach where $D$ is instrumented by $Z$. I allow for possible heterogeneity in the treatment effect as a function of $X_i$ by including interaction terms between the zero-centered transformation of $X_i$ ($\tilde{X_i}$) and eligibility $Z_i$. The models for the first stages are represented by equations 1 and 2, where $f_1(\tilde{X_i})$ is a given polynomial transformation of the centered running variable. 
@@ -137,7 +136,7 @@ Y_i = \alpha + \tau\hat{D_i} + \beta_0\tilde{X_i}+ \beta_1(\tilde{X_i}\hat{D_i})
 \end{aligned}
 $$
 
-To determine the appropriate functional form of the regression, I estimate $\tau$ using both the full sample with first, second and third order polynomials (i.e. where a $f_1(\tilde{X_i}) = \tilde{X_i};\tilde{X_i}^2; \tilde{X_i}^3$), and with local linear regression using a triangular kernel and observations within the robust bias-corrected (RBC) bandwidth (Calonico, Cattaneo, and Farrell, 2019). Table 2 confirms that $Z$ and interactions between $Z$ and $\tilde{X}$ are strong instruments.^[An aside regarding weights and clustering: Though counties do differ substantially in population, weighting for size would typically achieve an effect estimate appropriate for individual, rather than population inference. Additionally, although there is clear geographic clustering (e.g. counties within states), $D$ is not randomized at this level. Further, some clusters (namely, Delaware and Rhode Island) contain only two participating counties, leading not only to highly imbalanced cluster sizes and a substantial reduction in power.] $\newline$
+To determine the appropriate functional form of the regression, I estimate $\tau$ using both the full sample with first, second and third order polynomials (i.e. where a $f_1(\tilde{X_i}) = \tilde{X_i};\tilde{X_i}^2; \tilde{X_i}^3$), and with local linear regression using a triangular kernel and observations within the robust bias-corrected (RBC) bandwidth (Calonico, Cattaneo, and Farrell, 2019). Table 2 confirms that $Z$ and interactions between $Z$ and $\tilde{X}$ are strong instruments.^[An aside regarding weights and clustering: Though counties do differ substantially in population, weighting for size would typically achieve an effect estimate appropriate for individual, rather than population inference. Additionally, although there is clear geographic clustering (e.g. counties within states), $D$ is not randomized at this level. Further, some clusters (namely, Delaware and Rhode Island) contain only two participating counties, leading not only to highly imbalanced cluster sizes and a substantial reduction in power.]
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE, results='hide'}
 library(AER)
@@ -727,8 +726,6 @@ res.tab %>%
 Using the sample of counties below the cutoff, there is consistently no local regression discontinuity effect on age-standardized or crude all-cause mortality when setting placebo thresholds at IMU scores 10 to 20 points below the true threshold (i.e. for IMU scores of 42 - 52; Figure 3 row 1). With the exception of a placebo threshold 6 points below the true threshold, at which the estimated $\tau$ is larger than the 'true' RD effect (excess of 497 deaths versus 161 per 10,000 person-years) and significant, placebo thresholds closer to the true cutoff also show null effects but are larger in magnitude and less stable than those observed further from the true threshold. At no placebo cutoff are estimated effects for crude heart disease mortality significant, but signifcant effects are observed at placebo cutoffs 17 and 6.8 points below the true threshold for age-standardized mortality. As for all-cause mortality, these estimated effects are substantially larger than the true discontinuity effect (Figure 3, row 2). Placebo thresholds for cancer mortality yield similar null effects, again with the exception of a placebo threshold 5 points below the true cutoff for age-standardized rates and 4.3 points below the threshold for crude rate (Figure 3, row 3). 
 
 Given the relative consistency of identifying an effect at false cutoff scores in the range of 4 to 7 points below the tru escore, I perform additional exploration of treatement probability at various IMU scores. The anticipated probabilty of receiving an NHSC physician is approximatley equal for counties with IMU scores between 52 and 58, after which probability begins to drop, reaching zero [as expected] for scores greater than 62. There is no evidence of preferential sorting around these thresholds, and the only locally imbalanced covariate was percent of elderly residents (Analyses provided in appendix). Thus, it is possible that the significant effects at these placebo thresholds are driven by imbalance in age. Alternatively, this may imply an implict threshold, perhaps due to administrative preference for specific counties. 
-$\newline$
-
 
 ```{r}
 make_rdd_plot_data_placebo <- function(outcome, cut = data$x_tilde, cutoff){
@@ -778,13 +775,12 @@ plac.cut %>%
     filter(lower_rob > -1000) %>%
     ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
     geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "", y = "LATE")+
+    theme_bw() + labs(x = "Placebo Cutoff", y = "LATE")+
     geom_hline(yintercept = 0, color = "black")+
     geom_vline(xintercept = 0, color = "red")+
     xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
     coord_cartesian(ylim = c(-1000, 2000))+
-    ggtitle("All-Cause")+
-  theme(axis.text.x = element_blank())
+    ggtitle("All-Cause")
   
 plac.cutb <- 
 purrr::map_df(.x = seq(-21, -.4, .1), 
@@ -797,7 +793,7 @@ plac.cutb %>%
     filter(lower_rob > -1000) %>%
     ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
     geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "Placebo Cutoff Value (0 = true)", y = "LATE")+
+    theme_bw() + labs(x = "Placebo Cutoff", y = "LATE")+
     geom_hline(yintercept = 0, color = "black")+
     geom_vline(xintercept = 0, color = "red")+
     xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
@@ -818,13 +814,12 @@ pp3<-
     filter(lower_rob > -1000) %>%
     ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
     geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "", y = "LATE")+
+    theme_bw() + labs(x = "Placebo Cutoff", y = "LATE")+
     geom_hline(yintercept = 0, color = "black")+
     geom_vline(xintercept = 0, color = "red")+
     xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
     coord_cartesian(ylim = c(-1000, 2000))+
-    ggtitle("Heart Disease")+
-  theme(axis.text.x = element_blank())
+    ggtitle("Heart Disease")
 
 plac.cut2b <- 
 purrr::map_df(.x = seq(-21, -.4, .1), 
@@ -837,7 +832,7 @@ pp4<-
     filter(lower_rob > -1000) %>%
     ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
     geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "Placebo Cutoff Value (0 = True)", y = "LATE")+
+    theme_bw() + labs(x = "Placebo Cutoff", y = "LATE")+
     geom_hline(yintercept = 0, color = "black")+
     geom_vline(xintercept = 0, color = "red")+
     xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
@@ -858,13 +853,12 @@ pp5<-
     filter(lower_rob > -1000) %>%
     ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
     geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "", y = "LATE")+
+    theme_bw() + labs(x = "Placebo Cutoff", y = "LATE")+
     geom_hline(yintercept = 0, color = "black")+
     geom_vline(xintercept = 0, color = "red")+
     xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
     coord_cartesian(ylim = c(-700, 1000))+
-    ggtitle("Cancer")+
-    theme(axis.text.x = element_blank())
+    ggtitle("Cancer")
   
   
 plac.cut3b <- 
@@ -878,7 +872,7 @@ pp6<-
     filter(lower_rob > -1000) %>%
     ggplot(aes(x = cutoff, y = estimate_bc)) + geom_line(color = "black") +
     geom_ribbon(aes(ymin = lower_bc, ymax = upper_bc), alpha =.3, fill = "#F8766D") +
-    theme_bw() + labs(x = "Placebo Cutoff Value (0 = true)", y = "LATE")+
+    theme_bw() + labs(x = "Placebo Cutoff", y = "LATE")+
     geom_hline(yintercept = 0, color = "black")+
     geom_vline(xintercept = 0, color = "red")+
     xlim(c(-21, 2))+ theme(panel.grid.minor.x = element_blank()) + 
@@ -890,9 +884,48 @@ pp6<-
 
 *Conclusion and Limitations*
 
-At best, results indicat no effect of participation in the NHSC on county-level mortality; at worst, participation in the NHSC may lead to increased mortality for counties with scores near the cutoff. Nonetheless, a number of potential threats to identification are present in the data, including associations with pretreatment outcomes and significant effects at points along the running variable other than the true cutpoint. I do not find threats to the exclusion restriction in the potential confounding covariates included, but there remains the possibility that other unmeasured variables violated this assumption. The estimand may also have limited generalizability- for instance, I exploit the anamoly in 2014 scoring in order to identify the treatment effect, but it may be that this same anamoly makes 2014 qualitatively different from treatment in other years. For instance, changes in administrative rules necessarily require additional time and investment, perhpas detracting from other program components in ways that adversely affect health. Moreover, the estimand is applicable only to counties near the cutoff, so highly underserved areas with the greatest need may experience different effects.
+At best, results indicate no effect of participation in the NHSC on county-level mortality; at worst, participation in the NHSC may lead to increased mortality. Nonetheless, a number of potential threats to identification are present in the data, including associations with pretreatment outcomes and significant effects at points along the running variable other than the true cutpoint. I do not find threats to the exclusion restriction in the potential confounding covariates included, but there remains the possibility that other unmeasured variables violated this assumption. The estimand may also have limited generalizability- for instance, I exploit the anamoly in 2014 scoring in order to identify the treatment effect, but it may be that this same anamoly makes 2014 qualitatively different from treatment in other years. For instance, changes in administrative rules necessarily require additional time and investment, perhpas detracting from other program components in ways that adversely affect health. Moreover, the estimand is applicable only to counties near the cutoff, so highly underserved areas with the greatest need may experience different effects.
 
 Additionally, a number of limitations present in the data may have lead to bias and/or measurement error, the most prominent of which was the fact that scores did not come from the NHSC administering body itself. Still, I will note that scores were generated using the same data sources and criteria used by the Department of Health and Human Services, and that generated scores paralleled prior knowledge of participation and eligbility.
+
+
+## References
+
+Anderson, R. N., & Rosenberg, H. M. (1998). Age standardization of death rates: Implementation of the year 2000 standard. *National Vital Statistics Reports, 47*(3).
+
+Calonico, S., Cattaneo, M. D., & Farrell, M. H. (2019). Optimal bandwidth choice for robust bias-corrected inference in regression discontinuity designs. *The Econometrics Journal*, *00*, 1–19. doi: 10.1093/ectj/utz022
+
+Centers for Disease Control and Prevention. (1995). *CDC Wonder*. Retrieved from http://wonder.cdc.gov/
+
+Fagan, E. B., Gibbons, C., Finnegan, S. C., Petterson, S., Peterson, L. E., Phillips Jr, R. L., & Bazemore, A. W. (2015). Family Medicine Graduate Proximity to Their Site of Training. *Family Medicine, 47*(2), 124–130.
+
+Heisler, E. (2017). *The National Health Service Corps* (No. CRS Report R44970). Washington, DC: Congressional Research Service.
+
+Holmes, G. M. (2005). Increasing physician supply in medically underserved areas. *Labour Economics*, 12(5), 697–725. doi: 10.1016/j.labeco.2004.02.003
+
+McCrary, J. (2008). Manipulation of the running variable in the regression discontinuity design: A density test. *Journal of Econometrics*, *142*(2), 698–714.
+
+National Health Service Corps Scholarship Program. , 42 U.S.C. § 2541 (2003).
+
+Parlier, A. B., Galvin, S. L., Thach, S., Kruidenier, D., & Fagan, E. B. (2018). The Road to Rural Primary Care: A Narrative Review of Factors That Help Develop, Recruit, and Retain Rural Primary Care Physicians. *Academic Medicine, 93*(1), 130–140. doi: 10.1097/ACM.0000000000001839
+
+Pathman, D. E., Konrad, T. R., Dann, R., & Koch, G. (2004). Retention of Primary Care Physicians in Rural Health Professional Shortage Areas. *American Journal of Public Health, 94*(10), 1723–1729. doi: 10.2105/AJPH.94.10.1723
+
+Rabinowitz, H. K., Diamond, J. J., Markham, F. W., & Paynter, N. P. (2001). Critical Factors for Designing Programs to Increase the Supply and Retention of Rural Primary Care Physicians. *JAMA, 286*(9), 1041–1048. doi: 10.1001/jama.286.9.1041
+
+Shi, L., Macinko, J., Starfield, B., Politzer, R., Wulu, J., & Xu, J. (2005). Primary Care, Social Inequalities, and All-Cause, Heart Disease, and Cancer Mortality in US Counties, 1990. *American Journal of Public Health, 95*(4), 674–680. doi: 10.2105/AJPH.2003.031716
+
+Starfield, B., Shi, L., & Macinko, J. (2005). Contribution of Primary Care to Health Systems and Health. *The Milbank Quarterly, 83*(3), 457–502. doi: 10.1111/j.1468-0009.2005.00409.x
+
+Torrieri, N. (2014). American Community Survey Design and Methodology (January 2014). Available online at: http://Www.census.gov/Acs/Www/Downloads/Survey_methodology/Acs_design_methodology_report_2014.pdf.
+
+U.S. Census Bureau; American Community Survey. (2014). 2014 American Community Survey 1-Year Estimates, Table S0103; generated by Sarah Van Alsten; using American FactFinder; Retrieved from http://factfinder.census.gov
+
+US Department of Health and Human Services. (2014a). Centers for Disease Control and Prevention (CDC) Behavioral Risk Factor Surveillance System Survey Questionnaire. Atlanta: CDC.
+
+US Department of Health and Human Services. (2014b). Health Resources and Services Administration. Area Health Resources Files (AHRF).
+
+U.S. Department of Health and Human Services. (2015, November). Shortage Designation Management System (SDMS): *Manual for Policies and Procedures*. Retrieved from http://contentmanager.med.uvm.edu/docs/sdms_manual_/ahec-documents/sdms_manual_.pdf?sfvrsn=10
 
 
 ## Appendix
@@ -1168,7 +1201,7 @@ tab1 %>% kableExtra::kable("latex",booktabs = T, escape = TRUE, align = "r",
                            caption = "Description of index of medical underservice score subcomponents and weighting") %>%
   # here you can add the vertical line, in my example, for all the columns
   kableExtra::column_spec (1:7) %>%
-  kableExtra::kable_styling("latex",latex_options = "hold_position")%>%
+  kableExtra::kable_styling("latex",latex_options = "HOLD_position")%>%
   add_header_above(c("Infant Mortality" = 2, "Percent  Over 65" = 2,
                      "Primary Care Ratio" = 2, "Percent  in Poverty" = 2))%>%
   footnote(number = c("Infant Mortality Rate = Infant Deaths per 1000 Live Births",
@@ -1177,7 +1210,9 @@ tab1 %>% kableExtra::kable("latex",booktabs = T, escape = TRUE, align = "r",
   
 ```
 
-```{r, fig.cap='Directed Acyclic Graph depicting causal model of NHSC program and county-level mortality', fig.height=6, fig.width=7, fig.align='center'}
+![Directed Acyclic Graph depicting causal model of NHSC program and county-level mortality](dag.png)
+
+```{r, fig.height=6, fig.width=7, fig.align='center', eval=FALSE, include=FALSE}
 library(DiagrammeR)
 #make dag
 grViz("
@@ -1216,8 +1251,6 @@ grViz("
 	}")
 ```
 
-
-### FRDD Specifications
 ```{r}
 #figure showing how models look with different polynomial specifications
 ########################################################
@@ -1569,22 +1602,18 @@ c6$vars_bins %>%
 
 
 ```{r, fig.cap="Age-Standardized (Left) and Crude (Right) All Cause Mortality FRDD Fits", fig.height=10, fig.width=8}
-(ac1 + ac4)/ (ac2 + ac5) / (ac3 + ac6) + 
-  plot_annotation(caption = "Lines represent predicted mortality rate for binned observations, and grey ribbons show 95% confidence intervals")
+(ac1 + ac4)/ (ac2 + ac5) / (ac3 + ac6) 
 
 ```
 
 ```{r, fig.cap = "Age-Standardized (Left) and Crude (Right) Heart Disease Mortality FRDD Fits", fig.height=10, fig.width=8}
-(hd1 + hd4)/ (hd2 + hd5) / (hd3 + hd6)+ 
-  plot_annotation(caption = "Lines represent predicted mortality rate for binned observations, and grey ribbons show 95% confidence intervals")
+(hd1 + hd4)/ (hd2 + hd5) / (hd3 + hd6)
 ```
 
 
 ```{r,fig.cap = "Age-Standardized (Left) and Crude (Right) Cancer Mortality FRDD Fits", fig.height=10, fig.width=8}
-(can1 + can4)/ (can2 + can5) / (can3 + can6)+ 
-  plot_annotation(caption = "Lines represent predicted mortality rate for binned observations, and grey ribbons show 95% confidence intervals")
+(can1 + can4)/ (can2 + can5) / (can3 + can6)
 ```
-
 
 
 ```{r, fig.cap='Treatment Probability by IMU Score. Dashed lines, from left to right, show scores of 55, 58, and 62 (the true cutoff)'}
@@ -1689,58 +1718,3 @@ res.tab %>%
 ```
 
 
-
-
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-$\newline$
-## References
-
-
-Anderson, R. N., & Rosenberg, H. M. (1998). Age standardization of death rates: Implementation of the year 2000 standard. *National Vital Statistics Reports, 47*(3).
-
-Calonico, S., Cattaneo, M. D., & Farrell, M. H. (2019). Optimal bandwidth choice for robust bias-corrected inference in regression discontinuity designs. *The Econometrics Journal*, *00*, 1–19. doi: 10.1093/ectj/utz022
-
-Centers for Disease Control and Prevention. (1995). *CDC Wonder*. Retrieved from http://wonder.cdc.gov/
-
-Fagan, E. B., Gibbons, C., Finnegan, S. C., Petterson, S., Peterson, L. E., Phillips Jr, R. L., & Bazemore, A. W. (2015). Family Medicine Graduate Proximity to Their Site of Training. *Family Medicine, 47*(2), 124–130.
-
-Heisler, E. (2017). *The National Health Service Corps* (No. CRS Report R44970). Washington, DC: Congressional Research Service.
-
-Holmes, G. M. (2005). Increasing physician supply in medically underserved areas. *Labour Economics*, 12(5), 697–725. doi: 10.1016/j.labeco.2004.02.003
-
-McCrary, J. (2008). Manipulation of the running variable in the regression discontinuity design: A density test. *Journal of Econometrics*, *142*(2), 698–714.
-
-National Health Service Corps Scholarship Program. , 42 U.S.C. § 2541 (2003).
-
-Parlier, A. B., Galvin, S. L., Thach, S., Kruidenier, D., & Fagan, E. B. (2018). The Road to Rural Primary Care: A Narrative Review of Factors That Help Develop, Recruit, and Retain Rural Primary Care Physicians. *Academic Medicine, 93*(1), 130–140. doi: 10.1097/ACM.0000000000001839
-
-Pathman, D. E., Konrad, T. R., Dann, R., & Koch, G. (2004). Retention of Primary Care Physicians in Rural Health Professional Shortage Areas. *American Journal of Public Health, 94*(10), 1723–1729. doi: 10.2105/AJPH.94.10.1723
-
-Rabinowitz, H. K., Diamond, J. J., Markham, F. W., & Paynter, N. P. (2001). Critical Factors for Designing Programs to Increase the Supply and Retention of Rural Primary Care Physicians. *JAMA, 286*(9), 1041–1048. doi: 10.1001/jama.286.9.1041
-
-Shi, L., Macinko, J., Starfield, B., Politzer, R., Wulu, J., & Xu, J. (2005). Primary Care, Social Inequalities, and All-Cause, Heart Disease, and Cancer Mortality in US Counties, 1990. *American Journal of Public Health, 95*(4), 674–680. doi: 10.2105/AJPH.2003.031716
-
-Starfield, B., Shi, L., & Macinko, J. (2005). Contribution of Primary Care to Health Systems and Health. *The Milbank Quarterly, 83*(3), 457–502. doi: 10.1111/j.1468-0009.2005.00409.x
-
-Torrieri, N. (2014). American Community Survey Design and Methodology (January 2014). Available online at: http://Www.census.gov/Acs/Www/Downloads/Survey_methodology/Acs_design_methodology_report_2014.pdf.
-
-U.S. Census Bureau; American Community Survey. (2014). 2014 American Community Survey 1-Year Estimates, Table S0103; generated by Sarah Van Alsten; using American FactFinder; Retrieved from http://factfinder.census.gov
-
-US Department of Health and Human Services. (2014a). Centers for Disease Control and Prevention (CDC) Behavioral Risk Factor Surveillance System Survey Questionnaire. Atlanta: CDC.
-
-US Department of Health and Human Services. (2014b). Health Resources and Services Administration. Area Health Resources Files (AHRF).
-
-U.S. Department of Health and Human Services. (2015, November). Shortage Designation Management System (SDMS): *Manual for Policies and Procedures*. Retrieved from http://contentmanager.med.uvm.edu/docs/sdms_manual_/ahec-documents/sdms_manual_.pdf?sfvrsn=10
